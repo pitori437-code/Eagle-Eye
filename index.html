@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eagle-Eye</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0b1220;
+      color: white;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #111c30;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #26344d;
+    }
+
+    header h1 {
+      color: #4da3ff;
+      font-size: 30px;
+    }
+
+    header p {
+      color: #aebbd0;
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .welcome {
+      margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #aebbd0;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: #121f33;
+      border: 1px solid #26344d;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: #aebbd0;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .report-btn {
+      background: #e53935;
+      color: white;
+    }
+
+    .location-btn {
+      background: #1976d2;
+      color: white;
+    }
+
+    .emergency-btn {
+      background: #ff9800;
+      color: white;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #status {
+      background: #0d1728;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      color: #8fd3ff;
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #71809a;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🦅 Eagle-Eye</h1>
+    <p>Community Safety & Incident Reporting</p>
+  </header>
+
+  <main class="container">
+
+    <section class="welcome">
+      <h2>Welcome to Eagle-Eye</h2>
+      <p>
+        Report incidents, share your location and help authorized
+        security officers respond to emergencies.
+      </p>
+    </section>
+
+    <div class="card">
+      <h3>🚨 Report an Incident</h3>
+      <p>
+        Report a crime or suspicious activity in your area.
+      </p>
+      <button class="report-btn" onclick="reportIncident()">
+        Report Incident
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>📍 Share My Location</h3>
+      <p>
+        Allow Eagle-Eye to access your current location.
+      </p>
+      <button class="location-btn" onclick="getLocation()">
+        Share Location
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>⚠️ Emergency</h3>
+      <p>
+        Use this option when you need urgent assistance.
+      </p>
+      <button class="emergency-btn" onclick="emergency()">
+        Emergency
+      </button>
+    </div>
+
+    <div id="status"></div>
+
+  </main>
+
+  <footer>
+    Eagle-Eye © 2026 | Community Safety Platform
+  </footer>
+
+  <script>
+
+    function showStatus(message) {
+      const status = document.getElementById("status");
+
+      status.innerHTML = message;
+      status.style.display = "block";
+    }
+
+    function reportIncident() {
+      showStatus(
+        "🚨 Incident reporting selected. The reporting form will be added next."
+      );
+    }
+
+    function getLocation() {
+
+      if (!navigator.geolocation) {
+        showStatus("❌ Location services are not supported on this device.");
+        return;
+      }
+
+      showStatus("📍 Getting your location...");
+
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          showStatus(
+            "📍 Location found!<br><br>" +
+            "Latitude: " + latitude + "<br>" +
+            "Longitude: " + longitude
+          );
+
+        },
+
+        function(error) {
+
+          showStatus(
+            "❌ Unable to get your location. " +
+            "Please allow location access in your browser."
+          );
+
+        }
+      );
+    }
+
+    function emergency() {
+
+      const confirmed = confirm(
+        "Are you sure you want to report an emergency?"
+      );
+
+      if (confirmed) {
+        showStatus(
+          "🚨 EMERGENCY ALERT ACTIVATED.<br><br>" +
+          "Emergency functionality will be connected to the reporting system next."
+        );
+      }
+
+    }
+
+  </script>
+
+</body>
+    </html>
