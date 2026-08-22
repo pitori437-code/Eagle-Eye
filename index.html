@@ -2,254 +2,1240 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
 <meta name="theme-color" content="#0b1220">
 
 <title>Eagle-Eye | Community Safety</title>
 
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+<!-- Leaflet -->
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
+
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-html,
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  background: #07101d;
-  color: #f5f7fb;
-  font-family: Arial, sans-serif;
-}
-
-button {
-  font: inherit;
-  cursor: pointer;
+    margin: 0;
+    background: #07101d;
+    color: #f6f8fb;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 header {
-  background: #10203a;
-  padding: 22px 15px;
-  text-align: center;
-  border-bottom: 2px solid #243a59;
+    background: #102038;
+    text-align: center;
+    padding: 25px 15px;
+    border-bottom: 2px solid #243a59;
 }
 
 .logo {
-  font-size: 42px;
-  font-weight: 800;
-  color: #3b9cff;
+    font-size: 46px;
+    font-weight: 800;
+    color: #4da3ff;
+}
+
+.logo span {
+    color: white;
 }
 
 .subtitle {
-  margin-top: 6px;
-  font-size: 18px;
-  color: #aebbd0;
+    font-size: 20px;
+    color: #aebbd0;
+    margin-top: 8px;
 }
 
 main {
-  width: 100%;
-  max-width: 760px;
-  margin: auto;
-  padding: 18px;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    padding: 18px;
 }
 
 h1 {
-  font-size: 30px;
-  margin: 10px 0;
+    font-size: 34px;
+    margin-bottom: 10px;
 }
 
 h2 {
-  font-size: 25px;
+    font-size: 28px;
 }
 
 p {
-  color: #b7c4d8;
-  line-height: 1.6;
-  font-size: 17px;
+    color: #b8c4d8;
+    font-size: 18px;
+    line-height: 1.6;
 }
 
 .card {
-  background: #10203a;
-  border: 1px solid #243a59;
-  border-radius: 24px;
-  padding: 22px;
-  margin-bottom: 18px;
+    background: #102038;
+    border: 1px solid #243a59;
+    border-radius: 24px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 8px 25px rgba(0,0,0,.2);
 }
 
-.action {
-  width: 100%;
-  border: 0;
-  border-radius: 16px;
-  padding: 18px;
-  margin-top: 15px;
-  color: white;
-  font-weight: 800;
-  font-size: 20px;
+button {
+    width: 100%;
+    border: none;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 15px;
+
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+
+    cursor: pointer;
 }
 
 .report {
-  background: #ef3838;
+    background: #ef3434;
 }
 
 .location {
-  background: #247fd7;
+    background: #2581db;
 }
 
 .emergency {
-  background: #ff9f0a;
-  color: white;
+    background: #ff9f0a;
 }
 
-.hidden {
-  display: none !important;
+.map-button {
+    background: #29456f;
 }
 
-.back {
-  background: #304a70;
-  border: 0;
-  color: white;
-  border-radius: 14px;
-  padding: 13px 22px;
-  font-weight: 700;
-  margin-bottom: 15px;
+button:active {
+    transform: scale(.98);
 }
+
+/* Screens */
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Map */
 
 #map {
-  height: 440px;
-  width: 100%;
-  border-radius: 22px;
-  overflow: hidden;
-  border: 2px solid #243a59;
+    width: 100%;
+    height: 430px;
+
+    border-radius: 22px;
+
+    overflow: hidden;
+
+    border: 2px solid #304968;
+
+    margin-top: 15px;
 }
 
-.map-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 12px;
+/* Map controls */
+
+.map-tools {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
 }
 
-.control {
-  border: 0;
-  border-radius: 13px;
-  padding: 14px 8px;
-  background: #263e61;
-  color: white;
-  font-weight: 700;
+.map-tools button {
+    margin-top: 0;
+    padding: 14px 8px;
+    font-size: 16px;
 }
 
-.control.active {
-  background: #2385df;
-}
-
-.location-info {
-  margin-top: 15px;
-  background: #0c1729;
-  border-radius: 18px;
-  padding: 18px;
-}
+/* Coordinates */
 
 .coordinates {
-  color: #72c7ff;
-  font-family: monospace;
-  font-size: 16px;
-  word-break: break-all;
-}
-
-.confirm {
-  background: #16a56b;
-}
-
-.street {
-  background: #6b4fd3;
+    background: #091629;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 15px;
+    color: #8fd0ff;
+    font-size: 16px;
 }
 
 .status {
-  background: #0c1729;
-  border-radius: 16px;
-  padding: 15px;
-  margin-top: 15px;
-  color: #8ed1ff;
-  line-height: 1.5;
+    background: #0b172b;
+    border-left: 4px solid #4da3ff;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+    color: #a8d9ff;
+}
+
+/* Incident form */
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 7px;
+    font-weight: 700;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 15px;
+
+    border-radius: 12px;
+
+    border: 1px solid #35506f;
+
+    background: #091629;
+
+    color: white;
+
+    font-size: 16px;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
 }
 
 footer {
-  text-align: center;
-  color: #73829a;
-  padding: 25px 10px 45px;
+    text-align: center;
+    padding: 35px 15px;
+    color: #71819a;
 }
 
-/* Incident marker */
-.incident-marker {
-  width: 42px;
-  height: 42px;
-  background: #e92323;
-  border: 4px solid white;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  box-shadow: 0 3px 12px rgba(0,0,0,.5);
+/* Leaflet popup */
+
+.leaflet-popup-content-wrapper {
+    background: #102038;
+    color: white;
 }
 
-.incident-marker::after {
-  content: "!";
-  display: block;
-  color: white;
-  font-weight: 900;
-  font-size: 22px;
-  text-align: center;
-  line-height: 34px;
-  transform: rotate(45deg);
+.leaflet-popup-tip {
+    background: #102038;
 }
 
-@media (max-width: 500px) {
-  .logo {
-    font-size: 34px;
-  }
-
-  #map {
-    height: 390px;
-  }
-
-  main {
-    padding: 14px;
-  }
+.leaflet-popup-content {
+    font-size: 15px;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo">🦅 Eagle-Eye</div>
-  <div class="subtitle">
-    Community Safety & Incident Reporting
-  </div>
+
+    <div class="logo">
+        🦅 Eagle-Eye
+    </div>
+
+    <div class="subtitle">
+        Community Safety & Incident Reporting
+    </div>
+
 </header>
+
 
 <main>
 
-  <!-- HOME -->
-  <section id="home">
+
+<!-- ================= HOME ================= -->
+
+<section id="home" class="screen active">
+
+    <h1>Welcome to Eagle-Eye</h1>
+
+    <p>
+        Report incidents, share your location and
+        help authorized security officers respond
+        to emergencies.
+    </p>
+
+
+    <!-- REPORT -->
 
     <div class="card">
-      <h1>Welcome to Eagle-Eye</h1>
 
-      <p>
-        Report incidents, select the exact location on a live map,
-        share your location and request emergency assistance.
-      </p>
+        <h2>🚨 Report an Incident</h2>
+
+        <p>
+            Report a crime or suspicious activity
+            by placing a pin directly on the map.
+        </p>
+
+        <button class="report"
+                onclick="openIncidentMap()">
+
+            📍 Report Incident
+
+        </button>
+
     </div>
 
+
+    <!-- LOCATION -->
+
     <div class="card">
-      <h2>🚨 Report an Incident</h2>
 
-      <p>
-        Tap the exact place where the incident happened.
-      </p>
+        <h2>📍 Share My Location</h2>
 
-      <button class="action report" onclick="openIncidentMap()">
-        Report
+        <p>
+            Find your current location and display
+            it on the live map.
+        </p>
+
+        <button class="location"
+                onclick="findMyLocation()">
+
+            📍 Share Location
+
+        </button>
+
+    </div>
+
+
+    <!-- EMERGENCY -->
+
+    <div class="card">
+
+        <h2>⚠️ Emergency</h2>
+
+        <p>
+            Use this option when you need urgent
+            assistance.
+        </p>
+
+        <button class="emergency"
+                onclick="openEmergencyMap()">
+
+            🚨 Emergency
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= INCIDENT MAP ================= -->
+
+<section id="incident" class="screen">
+
+    <button class="map-button"
+            onclick="showScreen('home')">
+
+        ← Back
+
+    </button>
+
+    <h1>
+        🚨 Select Incident Location
+    </h1>
+
+    <p>
+        Tap the exact place where the incident
+        happened. A red pin will appear.
+    </p>
+
+
+    <div id="map"></div>
+
+
+    <div class="map-tools">
+
+        <button class="map-button"
+                onclick="useMyLocation()">
+
+            📍 My Location
+
+        </button>
+
+
+        <button class="map-button"
+                onclick="openStreetView()">
+
+            👁️ Street View
+
+        </button>
+
+    </div>
+
+
+    <div class="map-tools">
+
+        <button class="map-button"
+                onclick="setMapView('normal')">
+
+            🗺️ Map
+
+        </button>
+
+
+        <button class="map-button"
+                onclick="setMapView('satellite')">
+
+            🛰️ Satellite
+
+        </button>
+
+    </div>
+
+
+    <div id="coordinates"
+         class="coordinates">
+
+        📍 Tap the map to select the incident
+        location.
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Incident Details</h2>
+
+        <label>
+            Incident Type
+        </label>
+
+        <select id="incidentType">
+
+            <option value="">
+                Select incident type
+            </option>
+
+            <option>
+                Crime
+            </option>
+
+            <option>
+                Theft
+            </option>
+
+            <option>
+                Assault
+            </option>
+
+            <option>
+                Suspicious Activity
+            </option>
+
+            <option>
+                Accident
+            </option>
+
+            <option>
+                Fire
+            </option>
+
+            <option>
+                Other
+            </option>
+
+        </select>
+
+
+        <label>
+            Description
+        </label>
+
+        <textarea
+            id="description"
+            placeholder="Describe what happened..."></textarea>
+
+
+        <button class="report"
+                onclick="submitIncident()">
+
+            🚨 Submit Incident
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= EMERGENCY MAP ================= -->
+
+<section id="emergencyScreen"
+         class="screen">
+
+    <button class="map-button"
+            onclick="showScreen('home')">
+
+        ← Back
+
+    </button>
+
+    <h1>
+        🚨 Emergency Location
+    </h1>
+
+    <p>
+        Your emergency location can be selected
+        directly on the map.
+    </p>
+
+
+    <div id="emergencyMap"></div>
+
+
+    <div class="coordinates"
+         id="emergencyCoordinates">
+
+        📍 Tap the map to select your location.
+
+    </div>
+
+
+    <button class="emergency"
+            onclick="sendEmergency()">
+
+        🚨 ACTIVATE EMERGENCY
+
+    </button>
+
+</section>
+
+
+</main>
+
+
+<footer>
+
+    Eagle-Eye © 2026 |
+    Community Safety Platform
+
+</footer>
+
+
+
+<script>
+
+/* =====================================================
+   MAP VARIABLES
+===================================================== */
+
+let map = null;
+
+let emergencyMap = null;
+
+let incidentMarker = null;
+
+let emergencyMarker = null;
+
+let selectedLat = null;
+
+let selectedLng = null;
+
+
+/* =====================================================
+   MAP LAYERS
+===================================================== */
+
+/*
+   Normal OpenStreetMap map
+*/
+
+const normalLayer = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        maxZoom: 19,
+
+        attribution:
+        '&copy; OpenStreetMap contributors'
+    }
+);
+
+
+/*
+   Satellite imagery
+
+   This uses Esri World Imagery tiles.
+*/
+
+const satelliteLayer = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+        maxZoom: 19,
+
+        attribution:
+        "Tiles &copy; Esri"
+    }
+);
+
+
+/* =====================================================
+   SCREEN CONTROL
+===================================================== */
+
+function showScreen(id) {
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen => {
+
+            screen.classList.remove("active");
+
+        });
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+}
+
+
+/* =====================================================
+   OPEN INCIDENT MAP
+===================================================== */
+
+function openIncidentMap() {
+
+    showScreen("incident");
+
+    setTimeout(() => {
+
+        initializeIncidentMap();
+
+    }, 100);
+
+}
+
+
+/* =====================================================
+   INITIALIZE INCIDENT MAP
+===================================================== */
+
+function initializeIncidentMap() {
+
+    if (map !== null) {
+
+        map.invalidateSize();
+
+        return;
+
+    }
+
+
+    /*
+       Johannesburg / Gauteng starting position.
+       The map will move to the user's GPS location
+       when they select My Location.
+    */
+
+    map = L.map("map", {
+
+        zoomControl: true,
+
+        attributionControl: true
+
+    }).setView(
+        [-26.2041, 28.0473],
+        12
+    );
+
+
+    normalLayer.addTo(map);
+
+
+    /*
+       IMPORTANT:
+       User taps the map.
+    */
+
+    map.on("click", function(e) {
+
+        placeIncidentPin(
+            e.latlng.lat,
+            e.latlng.lng
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   PLACE INCIDENT PIN
+===================================================== */
+
+function placeIncidentPin(lat, lng) {
+
+    selectedLat = lat;
+
+    selectedLng = lng;
+
+
+    /*
+       Remove old pin.
+    */
+
+    if (incidentMarker !== null) {
+
+        map.removeLayer(incidentMarker);
+
+    }
+
+
+    /*
+       Create red incident pin.
+    */
+
+    incidentMarker = L.marker(
+        [lat, lng],
+        {
+            draggable: true
+        }
+    ).addTo(map);
+
+
+    incidentMarker
+        .bindPopup(
+            "<b>🚨 Incident Location</b><br>" +
+            "Drag this pin to adjust the location."
+        )
+        .openPopup();
+
+
+    /*
+       Allow user to drag pin.
+    */
+
+    incidentMarker.on(
+        "dragend",
+        function(event) {
+
+            const position =
+                event.target.getLatLng();
+
+            selectedLat =
+                position.lat;
+
+            selectedLng =
+                position.lng;
+
+            updateCoordinates();
+
+        }
+    );
+
+
+    updateCoordinates();
+
+}
+
+
+/* =====================================================
+   UPDATE COORDINATES
+===================================================== */
+
+function updateCoordinates() {
+
+    if (
+        selectedLat === null ||
+        selectedLng === null
+    ) {
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("coordinates")
+        .innerHTML =
+
+        "📍 <b>Incident location selected</b><br><br>" +
+
+        "Latitude: " +
+        selectedLat.toFixed(7) +
+
+        "<br>" +
+
+        "Longitude: " +
+        selectedLng.toFixed(7);
+
+}
+
+
+/* =====================================================
+   NORMAL / SATELLITE
+===================================================== */
+
+function setMapView(type) {
+
+    if (!map) {
+
+        return;
+
+    }
+
+
+    if (type === "satellite") {
+
+        if (!map.hasLayer(satelliteLayer)) {
+
+            satelliteLayer.addTo(map);
+
+        }
+
+        if (map.hasLayer(normalLayer)) {
+
+            map.removeLayer(normalLayer);
+
+        }
+
+    }
+
+    else {
+
+        if (!map.hasLayer(normalLayer)) {
+
+            normalLayer.addTo(map);
+
+        }
+
+        if (map.hasLayer(satelliteLayer)) {
+
+            map.removeLayer(satelliteLayer);
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   MY LOCATION
+===================================================== */
+
+function useMyLocation() {
+
+    if (!navigator.geolocation) {
+
+        alert(
+            "Your browser does not support GPS location."
+        );
+
+        return;
+
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const lat =
+                position.coords.latitude;
+
+            const lng =
+                position.coords.longitude;
+
+
+            map.setView(
+                [lat, lng],
+                17
+            );
+
+
+            placeIncidentPin(
+                lat,
+                lng
+            );
+
+        },
+
+        function(error) {
+
+            alert(
+                "Unable to get your location. " +
+                "Please allow location permission."
+            );
+
+        },
+
+        {
+            enableHighAccuracy: true,
+
+            timeout: 10000,
+
+            maximumAge: 0
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   SHARE LOCATION BUTTON
+===================================================== */
+
+function findMyLocation() {
+
+    showScreen("incident");
+
+    setTimeout(() => {
+
+        initializeIncidentMap();
+
+        useMyLocation();
+
+    }, 100);
+
+}
+
+
+/* =====================================================
+   STREET VIEW
+===================================================== */
+
+function openStreetView() {
+
+    if (
+        selectedLat === null ||
+        selectedLng === null
+    ) {
+
+        alert(
+            "First tap the exact incident location."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Google Maps Street View URL.
+
+       This DOES NOT require a Google Maps
+       JavaScript API key.
+    */
+
+    const url =
+        "https://www.google.com/maps/@" +
+        "?api=1" +
+        "&map_action=pano" +
+        "&viewpoint=" +
+        encodeURIComponent(
+            selectedLat + "," + selectedLng
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+/* =====================================================
+   SUBMIT INCIDENT
+===================================================== */
+
+function submitIncident() {
+
+    if (
+        selectedLat === null ||
+        selectedLng === null
+    ) {
+
+        alert(
+            "Please tap the map to select " +
+            "where the incident happened."
+        );
+
+        return;
+
+    }
+
+
+    const type =
+        document
+        .getElementById("incidentType")
+        .value;
+
+
+    const description =
+        document
+        .getElementById("description")
+        .value;
+
+
+    if (!type) {
+
+        alert(
+            "Please select an incident type."
+        );
+
+        return;
+
+    }
+
+
+    alert(
+
+        "🚨 INCIDENT READY\n\n" +
+
+        "Type: " + type + "\n" +
+
+        "Latitude: " +
+        selectedLat.toFixed(7) + "\n" +
+
+        "Longitude: " +
+        selectedLng.toFixed(7) + "\n\n" +
+
+        "Description:\n" +
+        description +
+
+        "\n\n" +
+
+        "The location has been successfully pinned."
+
+    );
+
+
+    /*
+       Later we can connect this to
+       Firebase / Supabase / your own
+       reporting database.
+    */
+
+}
+
+
+/* =====================================================
+   EMERGENCY MAP
+===================================================== */
+
+function openEmergencyMap() {
+
+    showScreen(
+        "emergencyScreen"
+    );
+
+
+    setTimeout(() => {
+
+        initializeEmergencyMap();
+
+    }, 100);
+
+}
+
+
+/* =====================================================
+   INITIALIZE EMERGENCY MAP
+===================================================== */
+
+function initializeEmergencyMap() {
+
+    if (emergencyMap !== null) {
+
+        emergencyMap.invalidateSize();
+
+        return;
+
+    }
+
+
+    emergencyMap =
+        L.map("emergencyMap")
+        .setView(
+            [-26.2041, 28.0473],
+            12
+        );
+
+
+    normalLayer
+        .addTo(emergencyMap);
+
+
+    emergencyMap.on(
+        "click",
+        function(e) {
+
+            placeEmergencyPin(
+                e.latlng.lat,
+                e.latlng.lng
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   EMERGENCY PIN
+===================================================== */
+
+function placeEmergencyPin(lat, lng) {
+
+    if (
+        emergencyMarker !== null
+    ) {
+
+        emergencyMap.removeLayer(
+            emergencyMarker
+        );
+
+    }
+
+
+    emergencyMarker =
+        L.marker(
+            [lat, lng],
+            {
+                draggable: true
+            }
+        )
+        .addTo(emergencyMap);
+
+
+    emergencyMarker
+        .bindPopup(
+            "<b>🚨 Emergency Location</b>"
+        )
+        .openPopup();
+
+
+    updateEmergencyCoordinates(
+        lat,
+        lng
+    );
+
+
+    emergencyMarker.on(
+        "dragend",
+        function(event) {
+
+            const position =
+                event.target.getLatLng();
+
+            updateEmergencyCoordinates(
+                position.lat,
+                position.lng
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   EMERGENCY COORDINATES
+===================================================== */
+
+function updateEmergencyCoordinates(
+    lat,
+    lng
+) {
+
+    document
+        .getElementById(
+            "emergencyCoordinates"
+        )
+        .innerHTML =
+
+        "🚨 <b>Emergency location</b><br><br>" +
+
+        "Latitude: " +
+        lat.toFixed(7) +
+
+        "<br>" +
+
+        "Longitude: " +
+        lng.toFixed(7);
+
+}
+
+
+/* =====================================================
+   EMERGENCY SEND
+===================================================== */
+
+function sendEmergency() {
+
+    if (
+        emergencyMarker === null
+    ) {
+
+        alert(
+            "Please tap the map to select " +
+            "your emergency location."
+        );
+
+        return;
+
+    }
+
+
+    const position =
+        emergencyMarker.getLatLng();
+
+
+    alert(
+
+        "🚨 EMERGENCY LOCATION READY\n\n" +
+
+        "Latitude: " +
+        position.lat.toFixed(7) +
+
+        "\n" +
+
+        "Longitude: " +
+        position.lng.toFixed(7) +
+
+        "\n\n" +
+
+        "Your emergency location has been selected."
+
+    );
+
+
+    /*
+       This is where we will connect
+       the emergency alert to your
+       reporting/security system.
+    */
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+console.log(
+    "🦅 Eagle-Eye map system loaded."
+);
+
+</script>
+
+</body>
+  </html>
