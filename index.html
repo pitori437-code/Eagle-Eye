@@ -1,140 +1,1699 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Eagle-Eye | Live Incident Map</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+
+  <title>Eagle-Eye | Community Safety</title>
+
   <style>
-    :root{--bg:#07101d;--panel:#102038;--panel2:#0b1729;--line:#243a59;--text:#f6f8fb;--muted:#aebbd0;--blue:#1683ff;--red:#ef3434;--orange:#ff9d00;--green:#21c45b}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-    header{position:sticky;top:0;z-index:20;background:#0d1a2e;border-bottom:1px solid var(--line);padding:16px;text-align:center}header h1{margin:0;color:#4da3ff;font-size:28px}header p{margin:5px 0 0;color:var(--muted);font-size:13px}
-    main{max-width:760px;margin:auto;padding:18px}.welcome{padding:4px 2px 14px}.welcome h2{font-size:25px;margin:0 0 8px}.welcome p{color:var(--muted);line-height:1.5;margin:0}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin:0 0 15px;box-shadow:0 8px 25px rgba(0,0,0,.12)}.card h3{margin:0 0 7px;font-size:20px}.card p{color:var(--muted);line-height:1.5;margin:0 0 14px}
-    button{border:0;border-radius:11px;padding:14px 16px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;touch-action:manipulation}button:active{transform:scale(.985)}button:disabled{opacity:.55}.report-btn{background:var(--red);width:100%}.location-btn{background:#1976d2;width:100%}.emergency-btn{background:var(--orange);width:100%;color:#111}
-    #mapSection{padding:12px}.map-head{padding:6px 6px 4px}.map-head h3{margin:0}.map-help{padding:5px 6px 10px;color:var(--muted);font-size:13px;line-height:1.45}.map-wrap{position:relative}#map{height:430px;width:100%;border-radius:14px;overflow:hidden;background:#172238}
-    .toolbar{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:9px 0}.toolbar button{background:#263955;font-size:12px;padding:11px 7px}.toolbar button.active{background:var(--blue)}.toolbar .danger{background:#7f2424}.toolbar .street{background:#79520a}
-    .form{display:none;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:4px 0 8px}.form.show{display:block}.form h4{margin:0 0 8px;font-size:18px}.selected-box{font-family:monospace;color:#8fd3ff;font-size:12px;background:#07101d;border-radius:8px;padding:9px;margin:8px 0 12px}.form label{display:block;color:#cbd6e7;font-size:13px;margin:10px 0 5px}.form input,.form textarea,.form select{width:100%;background:#07101d;color:#fff;border:1px solid #344a68;border-radius:9px;padding:12px;font-size:15px}.form textarea{min-height:90px;resize:vertical}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.submit{background:var(--red)}.cancel{background:#30425d}
-    #streetPanel{display:none;background:#000;border-radius:14px;overflow:hidden;height:430px;position:relative}.street-close{position:absolute;z-index:5;top:10px;right:10px;background:rgba(0,0,0,.72);padding:10px 12px}.street-title{position:absolute;z-index:5;top:10px;left:10px;background:rgba(0,0,0,.72);padding:10px 12px;border-radius:9px;font-weight:700}
-    #status{display:none;background:#0d1b30;border:1px solid #1d385c;color:#8fd3ff;border-radius:12px;padding:13px;margin:15px 0;line-height:1.5}.coords{font-family:monospace}
-    .legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12px;padding:6px}.legend span{display:flex;align-items:center;gap:5px}.dot{width:11px;height:11px;border-radius:50%;display:inline-block}.red{background:var(--red)}.blue{background:#2d8cff}.orange{background:var(--orange)}
-    footer{text-align:center;color:#71809a;font-size:12px;padding:25px 15px 35px}
-    @media(max-width:520px){main{padding:14px}.card{padding:15px}.toolbar{grid-template-columns:repeat(2,1fr)}#map,#streetPanel{height:390px}}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #07101d;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #111f35;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #263a59;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header h1 {
+      color: #4da3ff;
+      font-size: 30px;
+    }
+
+    header p {
+      color: #aebbd0;
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .welcome {
+      padding: 4px 2px 18px;
+    }
+
+    .welcome h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .welcome p {
+      color: #aebbd0;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .card {
+      background: #121f33;
+      border: 1px solid #263a59;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+    }
+
+    .card h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #aebbd0;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      margin-top: 6px;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .report-btn {
+      background: #ed3434;
+    }
+
+    .location-btn {
+      background: #1976d2;
+    }
+
+    .emergency-btn {
+      background: #ff9800;
+    }
+
+    .secondary-btn {
+      background: #263a59;
+    }
+
+    .green-btn {
+      background: #16a34a;
+    }
+
+    #status {
+      background: #0d1728;
+      border: 1px solid #1d3150;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 18px;
+      color: #8fd3ff;
+      display: none;
+      line-height: 1.6;
+    }
+
+    /* MAP SCREEN */
+
+    #mapScreen {
+      display: none;
+    }
+
+    .map-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .back-btn {
+      width: auto;
+      padding: 10px 14px;
+      background: #263a59;
+      margin: 0;
+    }
+
+    .map-header h2 {
+      font-size: 22px;
+    }
+
+    #map {
+      width: 100%;
+      height: 58vh;
+      min-height: 430px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #263a59;
+      background: #172236;
+    }
+
+    .map-instructions {
+      background: #101d31;
+      border: 1px solid #263a59;
+      border-radius: 14px;
+      padding: 14px;
+      margin: 12px 0;
+      color: #b8c8df;
+      line-height: 1.5;
+    }
+
+    .map-tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .map-tools button {
+      margin: 0;
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    .report-form {
+      background: #121f33;
+      border: 1px solid #263a59;
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 14px;
+    }
+
+    .report-form h3 {
+      margin-bottom: 15px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      color: #d8e2f0;
+      font-weight: bold;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid #344b6d;
+      border-radius: 10px;
+      padding: 13px;
+      background: #0b1627;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .coordinates {
+      background: #0b1728;
+      border-radius: 10px;
+      padding: 12px;
+      color: #8fd3ff;
+      font-size: 14px;
+      margin-bottom: 15px;
+      word-break: break-word;
+    }
+
+    #streetViewPanel {
+      display: none;
+      margin-top: 14px;
+    }
+
+    #streetView {
+      width: 100%;
+      height: 55vh;
+      min-height: 400px;
+      border-radius: 18px;
+      border: 1px solid #263a59;
+      overflow: hidden;
+    }
+
+    .street-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .danger-note {
+      background: #2b1518;
+      border: 1px solid #673035;
+      color: #ffb6b6;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    footer {
+      text-align: center;
+      padding: 28px 18px;
+      color: #71809a;
+      font-size: 12px;
+    }
+
+    @media (max-width: 500px) {
+      #map {
+        height: 55vh;
+        min-height: 390px;
+      }
+
+      #streetView {
+        height: 52vh;
+        min-height: 380px;
+      }
+
+      .map-tools {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
-<header><h1>🦅 Eagle-Eye</h1><p>Community Safety &amp; Live Incident Reporting</p></header>
-<main>
-  <section class="welcome"><h2>Welcome to Eagle-Eye</h2><p>Report an incident by placing a pin directly on the live map, share your position, or request urgent assistance.</p></section>
 
-  <section class="card">
-    <h3>🚨 Report an Incident</h3>
-    <p>Choose the exact place on the live map. You can drag the pin before submitting.</p>
-    <button class="report-btn" onclick="startIncidentReport()">Report Incident</button>
-  </section>
+<header>
+  <h1>🦅 Eagle-Eye</h1>
+  <p>Community Safety & Incident Reporting</p>
+</header>
 
-  <section class="card">
-    <h3>📍 Share My Location</h3>
-    <p>Use your phone GPS to put your current position on the map.</p>
-    <button class="location-btn" onclick="getLocation()">Share Location</button>
-  </section>
+<main class="container">
 
-  <section class="card">
-    <h3>⚠️ Emergency</h3>
-    <p>Use this for urgent assistance. Your current position will be plotted on the map.</p>
-    <button class="emergency-btn" onclick="emergency()">Emergency</button>
-  </section>
+  <!-- HOME SCREEN -->
 
-  <section id="mapSection" class="card">
-    <div class="map-head"><h3>🗺️ Eagle-Eye Live Map</h3></div>
-    <div id="mapHelp" class="map-help">Tap <b>Report Incident</b>, then tap the exact place on the map.</div>
-    <div class="toolbar">
-      <button id="roadBtn" onclick="setMapType('roadmap')">🗺️ Map</button>
-      <button id="satBtn" onclick="setMapType('satellite')">🛰️ Satellite</button>
-      <button id="hybridBtn" onclick="setMapType('hybrid')">🌍 Hybrid</button>
-      <button onclick="getLocation()">📍 My Location</button>
-      <button class="street" onclick="openSelectedStreetView()">🚶 Street View</button>
-      <button class="danger" onclick="clearTemporaryPin()">✖ Clear Pin</button>
+  <section id="homeScreen">
+
+    <section class="welcome">
+      <h2>Welcome to Eagle-Eye</h2>
+      <p>
+        Report incidents, share your location and help authorized
+        security officers respond to emergencies.
+      </p>
+    </section>
+
+    <!-- REPORT -->
+
+    <div class="card">
+      <h3>🚨 Report an Incident</h3>
+
+      <p>
+        Report a crime or suspicious activity by selecting the
+        exact place on the live map.
+      </p>
+
+      <button class="report-btn" onclick="startIncidentReport()">
+        🚨 Report Incident
+      </button>
     </div>
-    <div class="map-wrap"><div id="map"></div><div id="streetPanel"><div class="street-title">🚶 Street View</div><button class="street-close" onclick="closeStreetView()">✕ Close</button></div></div>
 
-    <div id="incidentForm" class="form">
-      <h4>🚨 Incident details</h4>
-      <div id="selectedBox" class="selected-box">No location selected.</div>
-      <label for="incidentType">Incident type</label>
-      <select id="incidentType"><option>Suspicious activity</option><option>Crime</option><option>Robbery / theft</option><option>Assault</option><option>Accident</option><option>Fire</option><option>Medical emergency</option><option>Other</option></select>
-      <label for="incidentDescription">What happened?</label>
-      <textarea id="incidentDescription" placeholder="Describe what happened..."></textarea>
-      <div class="actions"><button class="submit" onclick="saveIncident()">Submit Report</button><button class="cancel" onclick="cancelIncident()">Cancel</button></div>
+    <!-- LOCATION -->
+
+    <div class="card">
+      <h3>📍 Share My Location</h3>
+
+      <p>
+        Allow Eagle-Eye to find your current position and
+        show it on the live map.
+      </p>
+
+      <button class="location-btn" onclick="shareMyLocation()">
+        📍 Share Location
+      </button>
     </div>
-    <div class="legend"><span><i class="dot red"></i> Incident</span><span><i class="dot blue"></i> My location</span><span><i class="dot orange"></i> Emergency</span></div>
+
+    <!-- EMERGENCY -->
+
+    <div class="card">
+      <h3>⚠️ Emergency</h3>
+
+      <p>
+        Use this option when you need urgent assistance.
+      </p>
+
+      <button class="emergency-btn" onclick="activateEmergency()">
+        ⚠️ Emergency
+      </button>
+
+      <div class="danger-note">
+        Only use Emergency when urgent assistance is actually required.
+      </div>
+    </div>
+
+    <div id="status"></div>
+
   </section>
 
-  <div id="status"></div>
+
+  <!-- MAP SCREEN -->
+
+  <section id="mapScreen">
+
+    <div class="map-header">
+
+      <button class="back-btn" onclick="goHome()">
+        ← Back
+      </button>
+
+      <h2 id="mapTitle">
+        Live Eagle-Eye Map
+      </h2>
+
+    </div>
+
+    <div id="map"></div>
+
+    <div class="map-instructions" id="mapInstructions">
+      🛰️ Live map ready.
+    </div>
+
+    <div class="map-tools">
+
+      <button
+        class="secondary-btn"
+        onclick="setMapType('roadmap')">
+        🗺️ Map
+      </button>
+
+      <button
+        class="secondary-btn"
+        onclick="setMapType('satellite')">
+        🛰️ Satellite
+      </button>
+
+      <button
+        class="secondary-btn"
+        onclick="setMapType('hybrid')">
+        🌍 Hybrid
+      </button>
+
+      <button
+        class="secondary-btn"
+        onclick="findMyLocation()">
+        📍 My Location
+      </button>
+
+      <button
+        class="secondary-btn"
+        onclick="openStreetView()">
+        🚶 Street View
+      </button>
+
+      <button
+        class="secondary-btn"
+        onclick="clearTemporaryPin()">
+        🧹 Clear Pin
+      </button>
+
+    </div>
+
+
+    <!-- INCIDENT FORM -->
+
+    <section
+      id="incidentForm"
+      class="report-form"
+      style="display:none;">
+
+      <h3>🚨 Report Incident</h3>
+
+      <div class="coordinates">
+        <strong>Selected location:</strong>
+        <br>
+        <span id="selectedCoordinates">
+          Tap the map to select a location.
+        </span>
+      </div>
+
+      <div class="field">
+
+        <label for="incidentType">
+          Incident Type
+        </label>
+
+        <select id="incidentType">
+
+          <option value="">
+            Select incident type
+          </option>
+
+          <option value="Theft">
+            Theft
+          </option>
+
+          <option value="Robbery">
+            Robbery
+          </option>
+
+          <option value="Assault">
+            Assault
+          </option>
+
+          <option value="Vandalism">
+            Vandalism
+          </option>
+
+          <option value="Suspicious Activity">
+            Suspicious Activity
+          </option>
+
+          <option value="Accident">
+            Accident
+          </option>
+
+          <option value="Fire">
+            Fire
+          </option>
+
+          <option value="Other">
+            Other
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="incidentDescription">
+          What happened?
+        </label>
+
+        <textarea
+          id="incidentDescription"
+          placeholder="Describe what happened..."></textarea>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="incidentTime">
+          Date & Time
+        </label>
+
+        <input
+          type="datetime-local"
+          id="incidentTime">
+
+      </div>
+
+
+      <button
+        class="green-btn"
+        onclick="submitIncident()">
+
+        ✅ Submit Report
+
+      </button>
+
+      <button
+        class="secondary-btn"
+        onclick="cancelIncident()">
+
+        Cancel
+
+      </button>
+
+    </section>
+
+
+    <!-- STREET VIEW -->
+
+    <section id="streetViewPanel">
+
+      <div class="street-title">
+        🚶 Virtual Street View
+      </div>
+
+      <div id="streetView"></div>
+
+      <button
+        class="secondary-btn"
+        onclick="closeStreetView()">
+
+        Close Street View
+
+      </button>
+
+    </section>
+
+  </section>
+
 </main>
-<footer>Eagle-Eye © 2026 | Community Safety Platform</footer>
+
+
+<footer>
+  Eagle-Eye © 2026 | Community Safety Platform
+</footer>
+
 
 <script>
-  // Paste your restricted Google Maps API key in the script URL at the bottom of this file.
-  let map, temporaryMarker=null, selectedLocation=null, locationMarker=null, incidentMarkers=[], incidentMode=false, streetPanorama=null;
-  const defaultCenter={lat:-25.7461,lng:28.1881};
 
-  function showStatus(message){const el=document.getElementById('status');el.innerHTML=message;el.style.display='block'}
-  function initMap(){
-    map=new google.maps.Map(document.getElementById('map'),{center:defaultCenter,zoom:12,mapTypeId:'roadmap',streetViewControl:true,fullscreenControl:true,mapTypeControl:false,zoomControl:true,clickableIcons:true});
-    map.addListener('click',e=>{if(incidentMode)placeIncidentPin(e.latLng)});
-    loadSavedIncidents(); updateMapButtons('roadmap');
+  /*
+   ============================================================
+   EAGLE-EYE CONFIGURATION
+   ============================================================
+  */
+
+  const GOOGLE_MAPS_API_KEY = "YOUR_GOOGLE_MAPS_API_KEY";
+
+
+  /*
+   ============================================================
+   GLOBAL VARIABLES
+   ============================================================
+  */
+
+  let map;
+
+  let streetView;
+
+  let streetViewService;
+
+  let selectedMarker = null;
+
+  let myLocationMarker = null;
+
+  let emergencyMarker = null;
+
+  let reportMode = false;
+
+  let selectedLocation = null;
+
+  let infoWindow;
+
+  let incidentMarkers = [];
+
+
+  /*
+   ============================================================
+   PAGE HELPERS
+   ============================================================
+  */
+
+  function showStatus(message) {
+
+    const status = document.getElementById("status");
+
+    status.innerHTML = message;
+
+    status.style.display = "block";
+
+    status.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
   }
-  function setMapType(type){if(!map)return;closeStreetView();map.setMapTypeId(type);updateMapButtons(type)}
-  function updateMapButtons(type){['roadBtn','satBtn','hybridBtn'].forEach(id=>document.getElementById(id).classList.remove('active'));document.getElementById(type==='roadmap'?'roadBtn':type==='satellite'?'satBtn':'hybridBtn').classList.add('active')}
-  function startIncidentReport(){
-    closeStreetView(); document.getElementById('mapSection').scrollIntoView({behavior:'smooth',block:'start'});incidentMode=true;
-    document.getElementById('mapHelp').innerHTML='<b>🚨 Incident mode ON.</b> Tap the exact place where the incident happened.';
-    showStatus('🚨 <b>Step 1:</b> Tap the incident location directly on the live map.');
+
+
+  function goHome() {
+
+    document.getElementById("mapScreen").style.display = "none";
+
+    document.getElementById("homeScreen").style.display = "block";
+
+    document.getElementById("streetViewPanel").style.display = "none";
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
-  function placeIncidentPin(latLng){
-    selectedLocation={lat:latLng.lat(),lng:latLng.lng()};incidentMode=false;
-    if(temporaryMarker)temporaryMarker.setMap(null);
-    temporaryMarker=new google.maps.Marker({map,position:selectedLocation,title:'Incident location',draggable:true,animation:google.maps.Animation.DROP});
-    temporaryMarker.addListener('dragend',e=>{selectedLocation={lat:e.latLng.lat(),lng:e.latLng.lng()};updateIncidentFormLocation()});
-    map.panTo(selectedLocation);map.setZoom(Math.max(map.getZoom(),16));
-    document.getElementById('incidentForm').classList.add('show');updateIncidentFormLocation();
-    showStatus('📍 <b>Step 2:</b> Pin placed. Drag it if needed, then complete the report.');
+
+
+  /*
+   ============================================================
+   MAP INITIALIZATION
+   ============================================================
+  */
+
+  function initMap() {
+
+    const defaultLocation = {
+      lat: -25.7479,
+      lng: 28.2293
+    };
+
+    map = new google.maps.Map(
+      document.getElementById("map"),
+      {
+        center: defaultLocation,
+
+        zoom: 13,
+
+        mapTypeId: "roadmap",
+
+        mapTypeControl: false,
+
+        streetViewControl: true,
+
+        fullscreenControl: true,
+
+        zoomControl: true,
+
+        gestureHandling: "greedy"
+      }
+    );
+
+
+    infoWindow = new google.maps.InfoWindow();
+
+    streetViewService =
+      new google.maps.StreetViewService();
+
+
+    /*
+     * IMPORTANT:
+     * When user taps map during incident reporting,
+     * place the incident pin there.
+     */
+
+    map.addListener("click", function(event) {
+
+      if (!reportMode) {
+        return;
+      }
+
+      placeIncidentPin(
+        event.latLng.lat(),
+        event.latLng.lng()
+      );
+
+    });
+
+
+    loadSavedIncidents();
+
+
+    /*
+     * Try to load user's location.
+     * Failure is okay.
+     */
+
+    if (navigator.geolocation) {
+
+      navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+          const location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          map.setCenter(location);
+
+        },
+
+        function() {
+          // User denied location.
+        }
+
+      );
+
+    }
+
   }
-  function updateIncidentFormLocation(){if(!selectedLocation)return;document.getElementById('selectedBox').textContent='Exact location: '+selectedLocation.lat.toFixed(7)+', '+selectedLocation.lng.toFixed(7);document.getElementById('mapHelp').innerHTML='<b>📍 Pin selected.</b> Drag the red pin to make the location exact.'}
-  function saveIncident(){
-    if(!selectedLocation){showStatus('❌ Choose the incident location on the map first.');return}
-    const incident={id:Date.now(),type:document.getElementById('incidentType').value,description:document.getElementById('incidentDescription').value.trim(),lat:selectedLocation.lat,lng:selectedLocation.lng,createdAt:new Date().toISOString()};
-    const saved=JSON.parse(localStorage.getItem('eagleEyeIncidents')||'[]');saved.push(incident);localStorage.setItem('eagleEyeIncidents',JSON.stringify(saved));addIncidentMarker(incident);
-    if(temporaryMarker)temporaryMarker.setMap(null);temporaryMarker=null;selectedLocation=null;document.getElementById('incidentForm').classList.remove('show');document.getElementById('incidentDescription').value='';
-    document.getElementById('mapHelp').innerHTML='Tap <b>Report Incident</b> to plot another report.';showStatus('✅ <b>Incident reported.</b><br>The incident is now plotted on your live map.');
-    map.setCenter(incident);map.setZoom(16);
+
+
+  /*
+   ============================================================
+   REPORT INCIDENT
+   ============================================================
+  */
+
+  function startIncidentReport() {
+
+    document.getElementById("homeScreen").style.display = "none";
+
+    document.getElementById("mapScreen").style.display = "block";
+
+    document.getElementById("incidentForm").style.display = "block";
+
+    document.getElementById("streetViewPanel").style.display = "none";
+
+    document.getElementById("mapTitle").textContent =
+      "🚨 Select Incident Location";
+
+    document.getElementById("mapInstructions").innerHTML =
+      "<strong>Step 1:</strong> Tap the exact place where the incident happened.<br><br>" +
+      "A 🚨 pin will appear. You can then drag the pin to adjust the location.";
+
+    reportMode = true;
+
+    selectedLocation = null;
+
+    clearTemporaryPin();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
   }
-  function cancelIncident(){incidentMode=false;clearTemporaryPin();document.getElementById('mapHelp').innerHTML='Tap <b>Report Incident</b>, then tap the exact place on the map.'}
-  function clearTemporaryPin(){if(temporaryMarker)temporaryMarker.setMap(null);temporaryMarker=null;selectedLocation=null;incidentMode=false;document.getElementById('incidentForm').classList.remove('show');document.getElementById('mapHelp').innerHTML='Tap <b>Report Incident</b>, then tap the exact place on the map.'}
-  function addIncidentMarker(incident){
-    const marker=new google.maps.Marker({map,position:{lat:incident.lat,lng:incident.lng},title:incident.type,label:'🚨'});
-    const info=new google.maps.InfoWindow({content:'<b>🚨 '+escapeHtml(incident.type)+'</b><br>'+escapeHtml(incident.description||'No description')+'<br><small>'+incident.lat.toFixed(6)+', '+incident.lng.toFixed(6)+'</small>'});
-    marker.addListener('click',()=>info.open({map,anchor:marker}));incidentMarkers.push(marker);
+
+
+  /*
+   ============================================================
+   PLACE INCIDENT PIN
+   ============================================================
+  */
+
+  function placeIncidentPin(latitude, longitude) {
+
+    selectedLocation = {
+      lat: latitude,
+      lng: longitude
+    };
+
+
+    /*
+     * Remove old temporary marker.
+     */
+
+    if (selectedMarker) {
+
+      selectedMarker.setMap(null);
+
+    }
+
+
+    selectedMarker = new google.maps.Marker({
+
+      position: selectedLocation,
+
+      map: map,
+
+      draggable: true,
+
+      title: "Incident location",
+
+      animation: google.maps.Animation.DROP,
+
+      icon: {
+        url:
+          "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+      }
+
+    });
+
+
+    /*
+     * Update coordinates when marker is dragged.
+     */
+
+    selectedMarker.addListener(
+      "dragend",
+      function(event) {
+
+        selectedLocation = {
+          lat: event.latLng.lat(),
+          lng: event.latLng.lng()
+        };
+
+        updateSelectedCoordinates();
+
+      }
+    );
+
+
+    updateSelectedCoordinates();
+
+
+    map.panTo(selectedLocation);
+
+    map.setZoom(17);
+
+
+    document.getElementById("mapInstructions").innerHTML =
+      "🚨 <strong>Incident location selected.</strong><br>" +
+      "Drag the red pin if you need to make the location more accurate.";
+
+
+    /*
+     * Automatically scroll to form.
+     */
+
+    document.getElementById("incidentForm").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
   }
-  function loadSavedIncidents(){JSON.parse(localStorage.getItem('eagleEyeIncidents')||'[]').forEach(addIncidentMarker)}
-  function getLocation(){
-    closeStreetView();if(!navigator.geolocation){showStatus('❌ Location services are not supported.');return}showStatus('📍 Getting your location…');
-    navigator.geolocation.getCurrentPosition(pos=>{const p={lat:pos.coords.latitude,lng:pos.coords.longitude};putLocationMarker(p,'📍 My location');map.panTo(p);map.setZoom(17);showStatus('📍 <b>Your location is on the map.</b><br><span class="coords">'+p.lat.toFixed(7)+', '+p.lng.toFixed(7)+'</span>')},()=>showStatus('❌ Location permission was denied or unavailable.'),{enableHighAccuracy:true,timeout:15000,maximumAge:10000});
+
+
+  function updateSelectedCoordinates() {
+
+    if (!selectedLocation) {
+      return;
+    }
+
+    document.getElementById(
+      "selectedCoordinates"
+    ).innerHTML =
+
+      "Latitude: " +
+      selectedLocation.lat.toFixed(7) +
+
+      "<br>Longitude: " +
+      selectedLocation.lng.toFixed(7);
+
   }
-  function putLocationMarker(p,title){if(locationMarker)locationMarker.setMap(null);locationMarker=new google.maps.Marker({map,position:p,title,label:'📍'})}
-  function emergency(){
-    if(!confirm('Activate Emergency and plot your current location?'))return;if(!navigator.geolocation){showStatus('❌ Location services are not supported.');return}showStatus('🚨 Getting your emergency location…');
-    navigator.geolocation.getCurrentPosition(pos=>{const p={lat:pos.coords.latitude,lng:pos.coords.longitude};if(locationMarker)locationMarker.setMap(null);locationMarker=new google.maps.Marker({map,position:p,title:'🚨 Emergency location',label:'⚠️'});map.panTo(p);map.setZoom(18);showStatus('🚨 <b>Emergency location plotted.</b><br><span class="coords">'+p.lat.toFixed(7)+', '+p.lng.toFixed(7)+'</span><br><br><b>Note:</b> this version plots the alert locally. A secure backend is needed to notify officers on other phones.')},()=>showStatus('❌ Could not get your location. Enable location permission.'),{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+
+
+  /*
+   ============================================================
+   SUBMIT INCIDENT
+   ============================================================
+  */
+
+  function submitIncident() {
+
+    if (!selectedLocation) {
+
+      alert(
+        "Please tap the exact incident location on the map first."
+      );
+
+      return;
+    }
+
+
+    const incidentType =
+      document.getElementById("incidentType").value;
+
+
+    const description =
+      document.getElementById("incidentDescription").value.trim();
+
+
+    const incidentTime =
+      document.getElementById("incidentTime").value;
+
+
+    if (!incidentType) {
+
+      alert(
+        "Please select an incident type."
+      );
+
+      return;
+    }
+
+
+    if (!description) {
+
+      alert(
+        "Please describe what happened."
+      );
+
+      return;
+    }
+
+
+    const incident = {
+
+      id:
+        "incident_" +
+        Date.now(),
+
+      type:
+        incidentType,
+
+      description:
+        description,
+
+      time:
+        incidentTime ||
+        new Date().toISOString(),
+
+      latitude:
+        selectedLocation.lat,
+
+      longitude:
+        selectedLocation.lng
+
+    };
+
+
+    /*
+     * Save locally.
+     *
+     * This makes the report remain available on this device.
+     *
+     * Later we can replace this with Firebase/Supabase
+     * so authorized security officers see reports live.
+     */
+
+    const incidents =
+      JSON.parse(
+        localStorage.getItem("eagleEyeIncidents") || "[]"
+      );
+
+
+    incidents.push(incident);
+
+
+    localStorage.setItem(
+      "eagleEyeIncidents",
+      JSON.stringify(incidents)
+    );
+
+
+    /*
+     * Put permanent marker on map.
+     */
+
+    addIncidentMarker(incident);
+
+
+    /*
+     * Reset report mode.
+     */
+
+    reportMode = false;
+
+
+    document.getElementById(
+      "incidentForm"
+    ).style.display = "none";
+
+
+    document.getElementById(
+      "mapTitle"
+    ).textContent = "🗺️ Eagle-Eye Live Map";
+
+
+    document.getElementById(
+      "mapInstructions"
+    ).innerHTML =
+
+      "✅ <strong>Incident reported.</strong><br>" +
+      "The incident is now plotted on the map.";
+
+
+    alert(
+      "🚨 Incident reported successfully."
+    );
+
   }
-  function openSelectedStreetView(){
-    if(!map)return;const pos=selectedLocation||(locationMarker?locationMarker.getPosition().toJSON():map.getCenter().toJSON());const svc=new google.maps.StreetViewService();showStatus('🚶 Looking for Street View imagery nearby…');
-    svc.getPanorama({location:pos,radius:100},(data,status)=>{if(status!=='OK'){showStatus('🚶 No Street View imagery was found near this location.');return}document.getElementById('map').style.display='none';document.getElementById('streetPanel').style.display='block';streetPanorama=new google.maps.StreetViewPanorama(document.getElementById('streetPanel'),{position:data.location.latLng,pov:{heading:0,pitch:0},zoom:1,addressControl:true,fullscreenControl:true,motionTracking:false});showStatus('🚶 <b>Street View opened.</b> Drag the view to look around.')});
+
+
+  /*
+   ============================================================
+   ADD SAVED INCIDENT MARKER
+   ============================================================
+  */
+
+  function addIncidentMarker(incident) {
+
+    const marker =
+      new google.maps.Marker({
+
+        position: {
+          lat: Number(incident.latitude),
+          lng: Number(incident.longitude)
+        },
+
+        map: map,
+
+        title:
+          "🚨 " + incident.type,
+
+        icon: {
+          url:
+            "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+        }
+
+      });
+
+
+    marker.addListener("click", function() {
+
+      const content =
+
+        "<div style='color:#111;max-width:250px'>" +
+
+        "<h3>🚨 " +
+        escapeHtml(incident.type) +
+        "</h3>" +
+
+        "<p><strong>Report:</strong><br>" +
+        escapeHtml(incident.description) +
+        "</p>" +
+
+        "<p><strong>Coordinates:</strong><br>" +
+
+        Number(incident.latitude).toFixed(7) +
+        ", " +
+
+        Number(incident.longitude).toFixed(7) +
+
+        "</p>" +
+
+        "</div>";
+
+
+      infoWindow.setContent(content);
+
+      infoWindow.open({
+        map: map,
+        anchor: marker
+      });
+
+    });
+
+
+    incidentMarkers.push(marker);
+
   }
-  function closeStreetView(){if(streetPanorama){streetPanorama.setVisible(false);streetPanorama=null}document.getElementById('streetPanel').style.display='none';document.getElementById('map').style.display='block'}
-  function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+
+  function loadSavedIncidents() {
+
+    const incidents =
+      JSON.parse(
+        localStorage.getItem("eagleEyeIncidents") || "[]"
+      );
+
+
+    incidents.forEach(function(incident) {
+
+      addIncidentMarker(incident);
+
+    });
+
+  }
+
+
+  /*
+   ============================================================
+   CANCEL INCIDENT
+   ============================================================
+  */
+
+  function cancelIncident() {
+
+    reportMode = false;
+
+    selectedLocation = null;
+
+    clearTemporaryPin();
+
+    document.getElementById(
+      "incidentForm"
+    ).style.display = "none";
+
+    document.getElementById(
+      "mapTitle"
+    ).textContent = "🗺️ Eagle-Eye Live Map";
+
+    document.getElementById(
+      "mapInstructions"
+    ).innerHTML =
+      "Live map ready.";
+
+  }
+
+
+  /*
+   ============================================================
+   CLEAR TEMPORARY PIN
+   ============================================================
+  */
+
+  function clearTemporaryPin() {
+
+    if (selectedMarker) {
+
+      selectedMarker.setMap(null);
+
+      selectedMarker = null;
+
+    }
+
+    selectedLocation = null;
+
+  }
+
+
+  /*
+   ============================================================
+   SHARE LOCATION
+   ============================================================
+  */
+
+  function shareMyLocation() {
+
+    document.getElementById("homeScreen").style.display = "none";
+
+    document.getElementById("mapScreen").style.display = "block";
+
+    document.getElementById("incidentForm").style.display = "none";
+
+    document.getElementById("streetViewPanel").style.display = "none";
+
+    document.getElementById("mapTitle").textContent =
+      "📍 My Location";
+
+    document.getElementById("mapInstructions").innerHTML =
+      "📍 Finding your current location...";
+
+
+    reportMode = false;
+
+
+    findMyLocation();
+
+  }
+
+
+  function findMyLocation() {
+
+    if (!navigator.geolocation) {
+
+      alert(
+        "Location services are not supported by this browser."
+      );
+
+      return;
+
+    }
+
+
+    document.getElementById("mapInstructions").innerHTML =
+      "📍 Getting your GPS location...";
+
+
+    navigator.geolocation.getCurrentPosition(
+
+      function(position) {
+
+        const location = {
+
+          lat: position.coords.latitude,
+
+          lng: position.coords.longitude
+
+        };
+
+
+        map.setCenter(location);
+
+        map.setZoom(17);
+
+
+        if (myLocationMarker) {
+
+          myLocationMarker.setMap(null);
+
+        }
+
+
+        myLocationMarker =
+          new google.maps.Marker({
+
+            position: location,
+
+            map: map,
+
+            title: "📍 Your Location",
+
+            icon: {
+              url:
+                "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+            }
+
+          });
+
+
+        document.getElementById(
+          "mapInstructions"
+        ).innerHTML =
+
+          "📍 <strong>Your location was found.</strong><br>" +
+
+          "Latitude: " +
+          location.lat.toFixed(7) +
+
+          "<br>Longitude: " +
+          location.lng.toFixed(7);
+
+      },
+
+
+      function(error) {
+
+        document.getElementById(
+          "mapInstructions"
+        ).innerHTML =
+
+          "❌ Unable to get your location.<br>" +
+          "Please allow location permission in your browser.";
+
+      },
+
+
+      {
+        enableHighAccuracy: true,
+
+        timeout: 15000,
+
+        maximumAge: 0
+
+      }
+
+    );
+
+  }
+
+
+  /*
+   ============================================================
+   EMERGENCY
+   ============================================================
+  */
+
+  function activateEmergency() {
+
+    const confirmed =
+      confirm(
+        "Are you sure you want to activate an emergency alert?"
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    document.getElementById("homeScreen").style.display = "none";
+
+    document.getElementById("mapScreen").style.display = "block";
+
+    document.getElementById("incidentForm").style.display = "none";
+
+    document.getElementById("streetViewPanel").style.display = "none";
+
+    document.getElementById("mapTitle").textContent =
+      "⚠️ Emergency Location";
+
+    document.getElementById("mapInstructions").innerHTML =
+      "⚠️ Getting your emergency location...";
+
+
+    reportMode = false;
+
+
+    if (!navigator.geolocation) {
+
+      alert(
+        "Location services are not supported."
+      );
+
+      return;
+
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+      function(position) {
+
+        const location = {
+
+          lat: position.coords.latitude,
+
+          lng: position.coords.longitude
+
+        };
+
+
+        map.setCenter(location);
+
+        map.setZoom(17);
+
+
+        if (emergencyMarker) {
+
+          emergencyMarker.setMap(null);
+
+        }
+
+
+        emergencyMarker =
+          new google.maps.Marker({
+
+            position: location,
+
+            map: map,
+
+            title: "⚠️ EMERGENCY",
+
+            animation:
+              google.maps.Animation.BOUNCE,
+
+            icon: {
+              url:
+                "https://maps.google.com/mapfiles/ms/icons/orange-dot.png"
+            }
+
+          });
+
+
+        setTimeout(function() {
+
+          if (emergencyMarker) {
+
+            emergencyMarker.setAnimation(null);
+
+          }
+
+        }, 2500);
+
+
+        document.getElementById(
+          "mapInstructions"
+        ).innerHTML =
+
+          "🚨 <strong>EMERGENCY LOCATION FOUND.</strong><br><br>" +
+
+          "Latitude: " +
+          location.lat.toFixed(7) +
+
+          "<br>Longitude: " +
+          location.lng.toFixed(7) +
+
+          "<br><br>" +
+
+          "⚠️ The location is plotted on the live map.";
+
+        alert(
+          "🚨 Emergency location found and plotted."
+        );
+
+      },
+
+
+      function() {
+
+        document.getElementById(
+          "mapInstructions"
+        ).innerHTML =
+
+          "❌ Emergency location could not be determined.<br>" +
+          "Please enable location access.";
+
+      },
+
+
+      {
+        enableHighAccuracy: true,
+
+        timeout: 15000,
+
+        maximumAge: 0
+
+      }
+
+    );
+
+  }
+
+
+  /*
+   ============================================================
+   MAP TYPE
+   ============================================================
+  */
+
+  function setMapType(type) {
+
+    if (!map) {
+      return;
+    }
+
+    map.setMapTypeId(type);
+
+  }
+
+
+  /*
+   ============================================================
+   STREET VIEW
+   ============================================================
+  */
+
+  function openStreetView() {
+
+    if (!map) {
+      return;
+    }
+
+
+    let location;
+
+
+    /*
+     * Prefer selected incident location.
+     */
+
+    if (selectedLocation) {
+
+      location = selectedLocation;
+
+    }
+
+
+    /*
+     * Otherwise use current GPS location.
+     */
+
+    else if (myLocationMarker) {
+
+      location =
+        myLocationMarker.getPosition();
+
+    }
+
+
+    /*
+     * Otherwise use center of map.
+     */
+
+    else {
+
+      const center =
+        map.getCenter();
+
+      location = {
+
+        lat: center.lat(),
+
+        lng: center.lng()
+
+      };
+
+    }
+
+
+    document.getElementById(
+      "streetViewPanel"
+    ).style.display = "block";
+
+
+    document.getElementById(
+      "streetViewPanel"
+    ).scrollIntoView({
+
+      behavior: "smooth",
+
+      block: "start"
+
+    });
+
+
+    document.getElementById(
+      "mapInstructions"
+    ).innerHTML =
+      "🚶 Looking for Street View imagery at this location...";
+
+
+    streetViewService.getPanorama(
+
+      {
+
+        location: location,
+
+        radius: 100,
+
+        preference:
+          google.maps.StreetViewPreference.NEAREST
+
+      },
+
+
+      function(data, status) {
+
+        if (
+          status ===
+          google.maps.StreetViewStatus.OK
+        ) {
+
+          const panoramaLocation =
+            data.location.latLng;
+
+
+          streetView =
+            new google.maps.StreetViewPanorama(
+
+              document.getElementById(
+                "streetView"
+              ),
+
+              {
+
+                position:
+                  panoramaLocation,
+
+                pov: {
+
+                  heading: 0,
+
+                  pitch: 0
+
+                },
+
+                zoom: 1,
+
+                addressControl: true,
+
+                fullscreenControl: true,
+
+                motionTracking: true,
+
+                motionTrackingControl: true
+
+              }
+
+            );
+
+
+          document.getElementById(
+            "mapInstructions"
+          ).innerHTML =
+            "🚶 <strong>Street View available.</strong> " +
+            "Move around the 360° view to inspect the location.";
+
+        }
+
+        else {
+
+          document.getElementById(
+            "streetViewPanel"
+          ).style.display = "none";
+
+
+          alert(
+            "Google Street View imagery is not available at this location."
+          );
+
+        }
+
+      }
+
+    );
+
+  }
+
+
+  function closeStreetView() {
+
+    document.getElementById(
+      "streetViewPanel"
+    ).style.display = "none";
+
+  }
+
+
+  /*
+   ============================================================
+   HTML SAFETY
+   ============================================================
+  */
+
+  function escapeHtml(value) {
+
+    return String(value)
+
+      .replaceAll("&", "&amp;")
+
+      .replaceAll("<", "&lt;")
+
+      .replaceAll(">", "&gt;")
+
+      .replaceAll('"', "&quot;")
+
+      .replaceAll("'", "&#039;");
+
+  }
+
 </script>
-<!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your restricted Google Maps API key. -->
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+
+
+<!--
+  ============================================================
+  GOOGLE MAPS JAVASCRIPT API
+  ============================================================
+
+  IMPORTANT:
+
+  Replace YOUR_GOOGLE_MAPS_API_KEY with your own Google Maps
+  API key.
+
+  Example:
+
+  key=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+  DO NOT POST YOUR REAL API KEY IN CHAT.
+
+  Restrict the key to your GitHub Pages domain.
+  ============================================================
+-->
+
+<script
+  async
+  defer
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
+</script>
+
 </body>
-  </html>
-  
+</html>
