@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07101d">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color"
+      content="#07101d">
 
 <title>Eagle-Eye | Community Safety</title>
 
+<!-- LEAFLET MAP -->
 <link
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 />
 
 <style>
+
 * {
   box-sizing: border-box;
 }
@@ -24,20 +30,23 @@ html {
 body {
   margin: 0;
   background: #07101d;
-  color: #f4f7fb;
-  font-family: Arial, Helvetica, sans-serif;
+  color: #f5f7fb;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 }
 
 header {
-  background: #102038;
-  padding: 20px;
+  background: #10233c;
+  border-bottom: 1px solid #29415f;
+  padding: 22px 18px;
   text-align: center;
-  border-bottom: 2px solid #243a59;
 }
 
 .logo {
   font-size: 42px;
-  font-weight: 800;
+  font-weight: 900;
   color: #4da3ff;
 }
 
@@ -46,51 +55,57 @@ header {
 }
 
 .subtitle {
-  color: #aebbd0;
+  color: #b8c6d9;
   font-size: 18px;
   margin-top: 8px;
 }
 
 main {
-  max-width: 760px;
+  width: 100%;
+  max-width: 850px;
   margin: auto;
-  padding: 20px;
+  padding: 22px;
 }
 
 h1 {
   font-size: 34px;
-  margin-top: 15px;
+  margin: 12px 0 18px;
 }
 
 h2 {
-  font-size: 26px;
+  font-size: 27px;
 }
 
 p {
-  color: #b9c6d8;
+  color: #b9c7da;
   font-size: 18px;
   line-height: 1.6;
 }
 
 .card {
-  background: #102038;
+  background: #10233c;
   border: 1px solid #29415f;
-  border-radius: 24px;
+  border-radius: 25px;
   padding: 28px;
   margin: 20px 0;
-  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+}
+
+.card h2 {
+  margin-top: 0;
 }
 
 button {
   width: 100%;
   border: 0;
-  border-radius: 15px;
+  border-radius: 16px;
   padding: 18px;
+  margin-top: 12px;
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 800;
   color: white;
   cursor: pointer;
-  margin-top: 12px;
+  min-height: 58px;
 }
 
 button:active {
@@ -102,7 +117,7 @@ button:active {
 }
 
 .blue {
-  background: #2585df;
+  background: #2584df;
 }
 
 .orange {
@@ -110,394 +125,433 @@ button:active {
 }
 
 .green {
-  background: #2ca84a;
+  background: #39a852;
 }
 
 .dark {
-  background: #263d5e;
+  background: #263e60;
 }
 
-.purple {
-  background: #7048d8;
+.gray {
+  background: #34465d;
 }
 
-.screen {
-  display: none;
+.hidden {
+  display: none !important;
 }
 
-.screen.active {
-  display: block;
-}
-
-.back {
-  width: auto;
-  padding: 12px 22px;
-  background: #263d5e;
-  margin-bottom: 15px;
-}
+/* MAP */
 
 #map {
   width: 100%;
-  height: 430px;
+  height: 480px;
   border-radius: 20px;
   overflow: hidden;
-  border: 2px solid #304866;
+  border: 2px solid #29415f;
+  background: #101b2b;
 }
 
-.map-info {
-  background: #0c1829;
+.map-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.map-controls button {
+  margin: 0;
+  padding: 14px;
+  font-size: 16px;
+}
+
+.location-info {
+  background: #0c1a2d;
   border-radius: 15px;
   padding: 15px;
   margin-top: 15px;
-}
-
-.coordinates {
-  color: #73c5ff;
+  color: #91caff;
   font-family: monospace;
-  font-size: 15px;
-  word-break: break-all;
+  font-size: 14px;
+  word-break: break-word;
 }
 
-label {
-  display: block;
-  margin-top: 18px;
-  margin-bottom: 7px;
-  font-weight: 700;
-}
-
-select,
-textarea,
-input {
-  width: 100%;
-  background: #081524;
-  color: white;
-  border: 1px solid #36506f;
-  border-radius: 12px;
+.status {
   padding: 15px;
+  border-radius: 14px;
+  background: #0b1728;
+  margin-top: 15px;
+  color: #9ed3ff;
+  font-weight: bold;
+}
+
+.incident-option {
+  display: block;
+  width: 100%;
+  background: #172d49;
+  border: 2px solid #294968;
+  color: white;
+  margin: 10px 0;
+}
+
+.incident-option.selected {
+  border-color: #4da3ff;
+  background: #214a76;
+}
+
+textarea,
+input,
+select {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 12px;
+  border: 1px solid #35506e;
+  background: #081525;
+  color: white;
   font-size: 16px;
 }
 
 textarea {
-  min-height: 120px;
+  min-height: 110px;
   resize: vertical;
 }
 
-.status {
-  background: #0b1728;
-  border-radius: 15px;
-  padding: 15px;
-  margin-top: 15px;
-  color: #78c8ff;
+/* DASHBOARD */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
-.report {
-  background: #0d1c30;
-  border: 1px solid #29415f;
-  border-radius: 16px;
-  padding: 18px;
-  margin: 12px 0;
+.dashboard-header button {
+  width: auto;
+  min-width: 60px;
 }
 
-.report-title {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.report-meta {
-  color: #aabbd0;
-  font-size: 14px;
-  margin-top: 7px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 7px 11px;
-  border-radius: 20px;
-  background: #263d5e;
-  margin-top: 10px;
-  font-size: 13px;
-}
-
-.dashboard-grid {
+.stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin: 20px 0;
+  grid-template-columns:
+    repeat(4, 1fr);
+  margin-top: 15px;
+  border: 1px solid #29415f;
+  border-radius: 18px;
+  overflow: hidden;
 }
 
 .stat {
-  background: #102038;
-  border: 1px solid #29415f;
-  border-radius: 15px;
-  padding: 15px 5px;
+  padding: 18px 8px;
   text-align: center;
+  background: #10233c;
+  border-right: 1px solid #29415f;
+}
+
+.stat:last-child {
+  border-right: 0;
 }
 
 .stat-number {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .stat-label {
-  color: #aebbd0;
+  color: #aebdd0;
   font-size: 13px;
+  margin-top: 5px;
 }
 
-.danger-note {
-  background: #30191d;
-  border: 1px solid #74343b;
-  color: #ffb6bc;
-  padding: 14px;
-  border-radius: 12px;
-  margin-top: 15px;
+.incident-list {
+  margin-top: 18px;
+}
+
+.incident {
+  background: #10233c;
+  border: 1px solid #29415f;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 12px;
+}
+
+.incident-title {
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.incident-meta {
+  color: #9fb0c5;
+  margin-top: 7px;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #234b72;
+  font-size: 12px;
 }
 
 footer {
   text-align: center;
-  color: #687b95;
-  padding: 30px 10px;
+  color: #74859d;
+  padding: 35px 15px;
 }
 
-.leaflet-control-layers {
-  background: #102038 !important;
-  color: white;
-}
+/* MOBILE */
 
-.leaflet-control-layers label {
-  color: #111;
-}
+@media (max-width: 600px) {
 
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  background: #102038;
-  color: white;
-}
-
-.leaflet-popup-content {
-  font-size: 15px;
-}
-
-@media(max-width:600px) {
   main {
-    padding: 14px;
+    padding: 16px;
   }
 
   .logo {
-    font-size: 34px;
+    font-size: 36px;
   }
 
   h1 {
-    font-size: 29px;
+    font-size: 30px;
   }
 
   .card {
-    padding: 20px;
+    padding: 22px;
   }
 
   #map {
-    height: 400px;
+    height: 430px;
   }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat {
+    border-right: 1px solid #29415f;
+    border-bottom: 1px solid #29415f;
+  }
+
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo">🦅 Eagle-<span>Eye</span></div>
+
+  <div class="logo">
+    🦅 Eagle-<span>Eye</span>
+  </div>
+
   <div class="subtitle">
     Community Safety & Incident Reporting
   </div>
+
 </header>
+
 
 <main>
 
 <!-- HOME -->
-<section id="home" class="screen active">
+
+<section id="homePage">
 
   <h1>Welcome to Eagle-Eye</h1>
 
   <p>
-    Report incidents, select the exact location on a live map,
-    and provide useful information to authorized personnel.
+    Report incidents, select the exact location
+    directly on a live interactive map, and
+    provide useful information to authorized
+    personnel.
   </p>
 
+
   <div class="card">
+
     <h2>🚨 Report an Incident</h2>
 
     <p>
-      Report a crime or suspicious activity and place the
-      exact location directly on the map.
+      Report a crime or suspicious activity and
+      place the exact location directly on the map.
     </p>
 
-    <button class="red" onclick="openReport()">
+    <button
+      class="red"
+      onclick="openReport()">
       Report Incident
     </button>
+
   </div>
 
+
   <div class="card">
+
     <h2>📍 Share My Location</h2>
 
     <p>
-      Find your current location on the Eagle-Eye map.
+      Find your current location on the map and
+      share the location with someone you trust.
     </p>
 
-    <button class="blue" onclick="openLocation()">
+    <button
+      class="blue"
+      onclick="shareLocation()">
       Share Location
     </button>
+
   </div>
 
+
   <div class="card">
+
     <h2>⚠️ Emergency</h2>
 
     <p>
-      Use this option when you need urgent assistance.
+      Use this option when you need urgent
+      assistance.
     </p>
 
-    <button class="orange" onclick="emergency()">
+    <button
+      class="orange"
+      onclick="emergency()">
       Emergency
     </button>
+
   </div>
 
+
   <div class="card">
+
     <h2>👮 Officer Dashboard</h2>
 
     <p>
-      View incident reports stored on this device and their
-      locations on the map.
+      View test incident pins recorded on this
+      device.
     </p>
 
-    <button class="purple" onclick="openDashboard()">
+    <button
+      class="green"
+      onclick="openDashboard()">
       Open Officer Dashboard
     </button>
+
   </div>
 
 </section>
 
 
-<!-- REPORT -->
-<section id="report" class="screen">
+<!-- REPORT PAGE -->
 
-  <button class="back" onclick="showScreen('home')">
+<section id="reportPage" class="hidden">
+
+  <button
+    class="dark"
+    onclick="showPage('homePage')">
     ← Back
   </button>
 
   <div class="card">
 
-    <h1>🚨 Select Incident Location</h1>
+    <h2>🚨 Select Incident Location</h2>
 
     <p>
-      <b>Step 1:</b> Tap the exact place where the incident
-      happened.
+      Tap the exact location where the incident
+      happened. A pin will appear.
     </p>
 
     <div id="map"></div>
 
-    <div class="map-info">
-      <b>Selected Location</b>
 
-      <div id="coordinates" class="coordinates">
-        Tap the map to select a location.
-      </div>
+    <div class="map-controls">
+
+      <button
+        class="blue"
+        onclick="useMyLocation()">
+        📍 My Location
+      </button>
+
+      <button
+        class="green"
+        onclick="toggleSatellite()">
+        🛰️ Satellite
+      </button>
+
     </div>
 
-    <button class="blue" onclick="useMyLocation()">
-      📍 Use My Current Location
-    </button>
 
-    <button class="dark" onclick="openGoogleMaps()">
-      🌐 Open Location in Google Maps
-    </button>
+    <div
+      id="locationInfo"
+      class="location-info">
+      Tap the map to select a location.
+    </div>
+
+
+    <div
+      id="mapStatus"
+      class="status">
+      Map ready.
+    </div>
 
   </div>
 
+
   <div class="card">
 
-    <h2>Step 2: Incident Information</h2>
+    <h2>Incident Type</h2>
 
-    <label for="incidentType">
-      Incident Type
-    </label>
+    <p>
+      Select the type of incident.
+    </p>
 
-    <select id="incidentType">
 
-      <option value="Armed Robbery">
-        🔴 Armed Robbery
-      </option>
+    <button
+      class="incident-option"
+      onclick="selectIncident(this,'Armed Robbery')">
+      🔴 Armed Robbery
+    </button>
 
-      <option value="Theft">
-        🟠 Theft
-      </option>
 
-      <option value="Assault">
-        🟣 Assault
-      </option>
+    <button
+      class="incident-option"
+      onclick="selectIncident(this,'Vandalism')">
+      🔵 Vandalism
+    </button>
 
-      <option value="Vandalism">
-        🔵 Vandalism
-      </option>
 
-      <option value="Drug Activity">
-        🟢 Drug Activity
-      </option>
+    <button
+      class="incident-option"
+      onclick="selectIncident(this,'Drug Activity')">
+      🟢 Drug Activity
+    </button>
 
-      <option value="Suspicious Activity">
-        🟡 Suspicious Activity
-      </option>
 
-      <option value="Burglary">
-        🟤 Burglary
-      </option>
+    <button
+      class="incident-option"
+      onclick="selectIncident(this,'Suspicious Activity')">
+      🟡 Suspicious Activity
+    </button>
 
-      <option value="Other">
-        ⚪ Other
-      </option>
 
-    </select>
+    <button
+      class="incident-option"
+      onclick="selectIncident(this,'Theft')">
+      🟠 Theft
+    </button>
 
-    <label for="description">
-      Description
-    </label>
 
     <textarea
       id="description"
-      placeholder="Describe what happened..."
-    ></textarea>
+      placeholder="Describe what happened...">
+    </textarea>
 
-    <button class="red" onclick="submitIncident()">
+
+    <button
+      class="red"
+      onclick="submitIncident()">
       🚨 Submit Incident
-    </button>
-
-    <div id="reportStatus"></div>
-
-  </div>
-
-</section>
-
-
-<!-- LOCATION -->
-<section id="location" class="screen">
-
-  <button class="back" onclick="showScreen('home')">
-    ← Back
-  </button>
-
-  <div class="card">
-
-    <h1>📍 My Location</h1>
-
-    <div id="locationMap"></div>
-
-    <div id="locationStatus" class="status">
-      Press the button below to find your location.
-    </div>
-
-    <button class="blue" onclick="findLocation()">
-      📍 Find My Location
-    </button>
-
-    <button class="dark" onclick="openGoogleMapsCurrent()">
-      🌐 Open in Google Maps
     </button>
 
   </div>
@@ -506,64 +560,134 @@ footer {
 
 
 <!-- DASHBOARD -->
-<section id="dashboard" class="screen">
 
-  <button class="back" onclick="showScreen('home')">
+<section
+  id="dashboardPage"
+  class="hidden">
+
+  <button
+    class="dark"
+    onclick="showPage('homePage')">
     ← Back
   </button>
 
+
   <div class="card">
 
-    <h1>👮 Officer Dashboard</h1>
+    <div class="dashboard-header">
 
-    <p>
-      Eagle-Eye incident overview.
-    </p>
+      <div>
 
-    <div class="dashboard-grid">
+        <h2 style="margin-bottom:5px;">
+          🦅 Eagle-Eye
+        </h2>
 
-      <div class="stat">
-        <div id="totalReports" class="stat-number">0</div>
-        <div class="stat-label">Total</div>
-      </div>
+        <strong style="color:#63d82f;">
+          Officer Dashboard
+        </strong>
 
-      <div class="stat">
-        <div id="newReports" class="stat-number">0</div>
-        <div class="stat-label">New</div>
-      </div>
-
-      <div class="stat">
-        <div id="resolvedReports" class="stat-number">0</div>
-        <div class="stat-label">Resolved</div>
       </div>
 
     </div>
 
-    <div id="dashboardMap"></div>
 
-  </div>
+    <div class="stats">
 
-  <div class="card">
+      <div class="stat">
 
-    <h2>📋 Recent Incidents</h2>
+        <div
+          id="totalCount"
+          class="stat-number">
+          0
+        </div>
 
-    <div id="incidentList">
-      No incidents have been reported on this device.
+        <div class="stat-label">
+          👥 Total
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div
+          id="newCount"
+          class="stat-number">
+          0
+        </div>
+
+        <div class="stat-label">
+          📍 New
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div
+          id="progressCount"
+          class="stat-number">
+          0
+        </div>
+
+        <div class="stat-label">
+          🔄 In Progress
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div
+          id="resolvedCount"
+          class="stat-number">
+          0
+        </div>
+
+        <div class="stat-label">
+          ✓ Resolved
+        </div>
+
+      </div>
+
     </div>
 
   </div>
 
+
   <div class="card">
 
-    <button class="dark" onclick="clearReports()">
-      🗑️ Clear Test Reports
+    <h2>🗺️ Live Incident Map</h2>
+
+    <div id="dashboardMap"
+         style="
+           width:100%;
+           height:480px;
+           border-radius:20px;
+           overflow:hidden;
+         ">
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Recent Incidents</h2>
+
+    <div
+      id="incidentList"
+      class="incident-list">
+    </div>
+
+
+    <button
+      class="gray"
+      onclick="clearTestReports()">
+      Clear Test Reports
     </button>
-
-    <div class="danger-note">
-      This test version stores reports only in this
-      browser/device. It does not send reports to police
-      or a central server.
-    </div>
 
   </div>
 
@@ -571,691 +695,135 @@ footer {
 
 </main>
 
+
 <footer>
   Eagle-Eye © 2026 | Community Safety Platform
 </footer>
 
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- LEAFLET -->
+
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
 
 <script>
 
 /* =====================================================
-   EAGLE-EYE
-   MAIN APPLICATION
+   VARIABLES
    ===================================================== */
 
 let reportMap = null;
-let locationMap = null;
 let dashboardMap = null;
 
 let reportMarker = null;
-let locationMarker = null;
 
-let selectedLat = null;
-let selectedLng = null;
+let selectedIncident = "";
 
-let currentLat = null;
-let currentLng = null;
+let satelliteEnabled = false;
+
+let streetLayer = null;
+let satelliteLayer = null;
+
+
+/* Default map location.
+   Johannesburg, South Africa.
+*/
+
+const DEFAULT_LOCATION = [
+  -26.2041,
+  28.0473
+];
 
 
 /* =====================================================
-   SCREEN NAVIGATION
+   PAGE SYSTEM
    ===================================================== */
 
-function showScreen(id) {
+function showPage(pageId) {
 
-  document.querySelectorAll(".screen").forEach(screen => {
-    screen.classList.remove("active");
+  const pages = [
+    "homePage",
+    "reportPage",
+    "dashboardPage"
+  ];
+
+  pages.forEach(function(id) {
+
+    document
+      .getElementById(id)
+      .classList.add("hidden");
+
   });
 
-  const screen = document.getElementById(id);
+  document
+    .getElementById(pageId)
+    .classList.remove("hidden");
 
-  if (screen) {
-    screen.classList.add("active");
-  }
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo(0,0);
 
 }
 
 
 /* =====================================================
-   REPORT PAGE
+   OPEN REPORT
    ===================================================== */
 
 function openReport() {
 
-  showScreen("report");
+  showPage("reportPage");
 
-  setTimeout(() => {
+  setTimeout(function() {
 
-    if (!reportMap) {
-      createReportMap();
-    } else {
-      reportMap.invalidateSize();
-    }
+    createReportMap();
 
-  }, 200);
+  }, 150);
 
 }
 
+
+/* =====================================================
+   CREATE REPORT MAP
+   ===================================================== */
 
 function createReportMap() {
 
-  reportMap = L.map("map").setView(
-    [-25.7479, 28.2293],
+  if (reportMap) {
+
+    reportMap.invalidateSize();
+
+    return;
+
+  }
+
+
+  reportMap = L.map("map", {
+
+    zoomControl: true,
+
+    attributionControl: true
+
+  }).setView(
+    DEFAULT_LOCATION,
     13
   );
 
-  const street = L.tileLayer(
+
+  /* STREET MAP */
+
+  streetLayer = L.tileLayer(
+
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
     {
+      maxZoom: 19,
+
       attribution:
         '&copy; OpenStreetMap contributors'
     }
-  );
-
-  const satellite = L.tileLayer(
-    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    {
-      attribution:
-        "Tiles &copy; Esri"
-    }
-  );
-
-  street.addTo(reportMap);
-
-  const baseMaps = {
-    "🗺️ Map": street,
-    "🛰️ Satellite": satellite
-  };
-
-  L.control.layers(baseMaps).addTo(reportMap);
-
-  reportMap.on("click", function(e) {
-
-    setIncidentLocation(
-      e.latlng.lat,
-      e.latlng.lng
-    );
-
-  });
-
-}
-
-
-function setIncidentLocation(lat, lng) {
-
-  selectedLat = lat;
-  selectedLng = lng;
-
-  if (reportMarker) {
-    reportMap.removeLayer(reportMarker);
-  }
-
-  reportMarker = L.marker(
-    [lat, lng],
-    {
-      draggable: true
-    }
-  ).addTo(reportMap);
-
-  reportMarker.bindPopup(
-    "<b>🚨 Incident Location</b><br>" +
-    lat.toFixed(6) +
-    ", " +
-    lng.toFixed(6)
-  ).openPopup();
-
-  reportMarker.on("dragend", function(e) {
-
-    const position =
-      e.target.getLatLng();
-
-    selectedLat = position.lat;
-    selectedLng = position.lng;
-
-    updateCoordinates();
-
-  });
-
-  updateCoordinates();
-
-}
-
-
-function updateCoordinates() {
-
-  if (
-    selectedLat === null ||
-    selectedLng === null
-  ) {
-    document.getElementById(
-      "coordinates"
-    ).textContent =
-      "Tap the map to select a location.";
-
-    return;
-  }
-
-  document.getElementById(
-    "coordinates"
-  ).innerHTML =
-    "Latitude: " +
-    selectedLat.toFixed(7) +
-    "<br>" +
-    "Longitude: " +
-    selectedLng.toFixed(7);
-
-}
-
-
-/* =====================================================
-   CURRENT LOCATION
-   ===================================================== */
-
-function useMyLocation() {
-
-  if (!navigator.geolocation) {
-
-    alert(
-      "Location services are not supported by this browser."
-    );
-
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-
-    function(position) {
-
-      const lat =
-        position.coords.latitude;
-
-      const lng =
-        position.coords.longitude;
-
-      setIncidentLocation(lat, lng);
-
-      reportMap.setView(
-        [lat, lng],
-        17
-      );
-
-    },
-
-    function(error) {
-
-      alert(
-        "Unable to get your location. " +
-        "Please allow location permission."
-      );
-
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0
-    }
 
   );
 
-}
 
-
-/* =====================================================
-   SUBMIT INCIDENT
-   ===================================================== */
-
-function submitIncident() {
-
-  if (
-    selectedLat === null ||
-    selectedLng === null
-  ) {
-
-    alert(
-      "Please tap the exact incident location on the map first."
-    );
-
-    return;
-  }
-
-  const type =
-    document.getElementById(
-      "incidentType"
-    ).value;
-
-  const description =
-    document.getElementById(
-      "description"
-    ).value.trim();
-
-  const report = {
-
-    id: Date.now(),
-
-    type: type,
-
-    description:
-      description ||
-      "No description provided.",
-
-    latitude: selectedLat,
-
-    longitude: selectedLng,
-
-    status: "New",
-
-    time:
-      new Date().toLocaleString()
-
-  };
-
-  const reports =
-    getReports();
-
-  reports.push(report);
-
-  localStorage.setItem(
-    "eagleEyeReports",
-    JSON.stringify(reports)
-  );
-
-  document.getElementById(
-    "reportStatus"
-  ).innerHTML =
-
-    '<div class="status">' +
-    '✅ Incident saved successfully.<br><br>' +
-    '<b>Location:</b> ' +
-    selectedLat.toFixed(6) +
-    ", " +
-    selectedLng.toFixed(6) +
-    '</div>';
-
-  document.getElementById(
-    "description"
-  ).value = "";
-
-  alert(
-    "Incident saved successfully."
-  );
-
-}
-
-
-/* =====================================================
-   GOOGLE MAPS LINK
-   ===================================================== */
-
-function openGoogleMaps() {
-
-  if (
-    selectedLat === null ||
-    selectedLng === null
-  ) {
-
-    alert(
-      "Select an incident location first."
-    );
-
-    return;
-  }
-
-  const url =
-    "https://www.google.com/maps/search/?api=1&query=" +
-    selectedLat +
-    "," +
-    selectedLng;
-
-  window.open(
-    url,
-    "_blank"
-  );
-
-}
-
-
-/* =====================================================
-   LOCATION PAGE
-   ===================================================== */
-
-function openLocation() {
-
-  showScreen("location");
-
-  setTimeout(() => {
-
-    if (!locationMap) {
-      createLocationMap();
-    } else {
-      locationMap.invalidateSize();
-    }
-
-  }, 200);
-
-}
-
-
-function createLocationMap() {
-
-  locationMap =
-    L.map("locationMap").setView(
-      [-25.7479, 28.2293],
-      13
-    );
-
-  L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      attribution:
-        "&copy; OpenStreetMap contributors"
-    }
-  ).addTo(locationMap);
-
-}
-
-
-function findLocation() {
-
-  if (!navigator.geolocation) {
-
-    document.getElementById(
-      "locationStatus"
-    ).textContent =
-      "Location is not supported.";
-
-    return;
-  }
-
-  document.getElementById(
-    "locationStatus"
-  ).textContent =
-    "📍 Finding your location...";
-
-  navigator.geolocation.getCurrentPosition(
-
-    function(position) {
-
-      currentLat =
-        position.coords.latitude;
-
-      currentLng =
-        position.coords.longitude;
-
-      if (locationMarker) {
-        locationMap.removeLayer(
-          locationMarker
-        );
-      }
-
-      locationMarker =
-        L.marker(
-          [currentLat, currentLng]
-        ).addTo(locationMap);
-
-      locationMarker.bindPopup(
-        "<b>📍 Your Location</b>"
-      ).openPopup();
-
-      locationMap.setView(
-        [currentLat, currentLng],
-        17
-      );
-
-      document.getElementById(
-        "locationStatus"
-      ).innerHTML =
-        "📍 Location found!<br><br>" +
-        "Latitude: " +
-        currentLat.toFixed(7) +
-        "<br>" +
-        "Longitude: " +
-        currentLng.toFixed(7);
-
-    },
-
-    function() {
-
-      document.getElementById(
-        "locationStatus"
-      ).textContent =
-        "Unable to find your location. Please allow location permission.";
-
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0
-    }
-
-  );
-
-}
-
-
-function openGoogleMapsCurrent() {
-
-  if (
-    currentLat === null ||
-    currentLng === null
-  ) {
-
-    alert(
-      "Find your location first."
-    );
-
-    return;
-  }
-
-  const url =
-    "https://www.google.com/maps/search/?api=1&query=" +
-    currentLat +
-    "," +
-    currentLng;
-
-  window.open(
-    url,
-    "_blank"
-  );
-
-}
-
-
-/* =====================================================
-   EMERGENCY
-   ===================================================== */
-
-function emergency() {
-
-  const confirmed =
-    confirm(
-      "Emergency assistance requested.\n\n" +
-      "This demo will open your phone's emergency dialer."
-    );
-
-  if (!confirmed) {
-    return;
-  }
-
-  window.location.href =
-    "tel:112";
-
-}
-
-
-/* =====================================================
-   OFFICER DASHBOARD
-   ===================================================== */
-
-function openDashboard() {
-
-  showScreen("dashboard");
-
-  setTimeout(() => {
-
-    createDashboardMap();
-
-    loadDashboard();
-
-  }, 200);
-
-}
-
-
-function createDashboardMap() {
-
-  const element =
-    document.getElementById(
-      "dashboardMap"
-    );
-
-  if (!element) {
-    return;
-  }
-
-  if (dashboardMap) {
-    dashboardMap.remove();
-  }
-
-  dashboardMap =
-    L.map("dashboardMap").setView(
-      [-25.7479, 28.2293],
-      12
-    );
-
-  const street =
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        attribution:
-          "&copy; OpenStreetMap contributors"
-      }
-    );
-
-  const satellite =
-    L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      {
-        attribution:
-          "Tiles &copy; Esri"
-      }
-    );
-
-  street.addTo(dashboardMap);
-
-  L.control.layers({
-    "🗺️ Map": street,
-    "🛰️ Satellite": satellite
-  }).addTo(dashboardMap);
-
-  const reports =
-    getReports();
-
-  reports.forEach(
-    report => addDashboardMarker(report)
-  );
-
-}
-
-
-function addDashboardMarker(report) {
-
-  const marker =
-    L.marker([
-      report.latitude,
-      report.longitude
-    ]).addTo(dashboardMap);
-
-  marker.bindPopup(
-
-    "<b>🚨 " +
-    escapeHtml(report.type) +
-    "</b><br><br>" +
-
-    escapeHtml(report.description) +
-    "<br><br>" +
-
-    "<small>" +
-    escapeHtml(report.time) +
-    "</small><br><br>" +
-
-    "📍 " +
-    report.latitude.toFixed(6) +
-    ", " +
-    report.longitude.toFixed(6)
-
-  );
-
-}
-
-
-/* =====================================================
-   DASHBOARD LIST
-   ===================================================== */
-
-function loadDashboard() {
-
-  const reports =
-    getReports();
-
-  document.getElementById(
-    "totalReports"
-  ).textContent =
-    reports.length;
-
-  document.getElementById(
-    "newReports"
-  ).textContent =
-    reports.filter(
-      r => r.status === "New"
-    ).length;
-
-  document.getElementById(
-    "resolvedReports"
-  ).textContent =
-    reports.filter(
-      r => r.status === "Resolved"
-    ).length;
-
-  const list =
-    document.getElementById(
-      "incidentList"
-    );
-
-  if (reports.length === 0) {
-
-    list.innerHTML =
-      "No incidents have been reported on this device.";
-
-    return;
-  }
-
-  list.innerHTML = "";
-
-  reports
-    .slice()
-    .reverse()
-    .forEach(report => {
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-      div.className =
-        "report";
-
-      div.innerHTML =
-
-        '<div class="report-title">' +
-        "🚨 " +
-        escapeHtml(report.type) +
-        "</di
+  /* SAT
