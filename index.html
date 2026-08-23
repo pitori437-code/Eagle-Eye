@@ -1,420 +1,579 @@
-<!-- EAGLE-EYE LIVE MAP ENGINE -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07101d">
 
-<script>
-let map;
-let satelliteLayer;
-let streetLayer;
-let currentLocationMarker = null;
+<title>Eagle-Eye | Community Safety</title>
 
-const incidents = [
-  {
-    id: 1,
-    type: "Armed Robbery",
-    status: "New",
-    lat: -25.5948,
-    lng: 28.0832,
-    description: "Reported armed robbery",
-    time: "Just now"
-  },
-  {
-    id: 2,
-    type: "Drug Activity",
-    status: "In Progress",
-    lat: -25.5962,
-    lng: 28.0861,
-    description: "Reported suspected drug activity",
-    time: "10 min ago"
-  },
-  {
-    id: 3,
-    type: "Suspicious Activity",
-    status: "New",
-    lat: -25.5924,
-    lng: 28.0805,
-    description: "Suspicious activity reported",
-    time: "18 min ago"
+<!-- Leaflet Map -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #07101d;
+  color: #f5f7fb;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+select,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+header {
+  background: #102038;
+  border-bottom: 1px solid #263a59;
+  padding: 18px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.eagle {
+  font-size: 48px;
+}
+
+.brand-title {
+  font-size: 42px;
+  font-weight: 800;
+  color: #3d94ff;
+}
+
+.brand-title span {
+  color: white;
+}
+
+.subtitle {
+  text-align: center;
+  color: #aebbd0;
+  font-size: 18px;
+  margin-top: 5px;
+}
+
+.container {
+  width: min(760px, 100%);
+  margin: auto;
+  padding: 20px 16px 50px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 27px;
+}
+
+h3 {
+  font-size: 22px;
+}
+
+p {
+  color: #b7c3d5;
+  line-height: 1.55;
+}
+
+.card {
+  background: #102038;
+  border: 1px solid #263a59;
+  border-radius: 22px;
+  padding: 22px;
+  margin: 18px 0;
+  box-shadow: 0 8px 25px rgba(0,0,0,.18);
+}
+
+.big-button {
+  width: 100%;
+  border: 0;
+  border-radius: 15px;
+  padding: 18px;
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 14px;
+}
+
+.red {
+  background: #ef3535;
+}
+
+.blue {
+  background: #2584df;
+}
+
+.orange {
+  background: #ff9800;
+}
+
+.green {
+  background: #35a853;
+}
+
+.dark-button {
+  background: #243a59;
+  color: white;
+  border: 1px solid #395477;
+  border-radius: 14px;
+  padding: 13px 17px;
+  font-weight: 700;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.notice {
+  background: #0b1729;
+  border-radius: 16px;
+  padding: 18px;
+  color: #86c9ff;
+  margin-top: 15px;
+}
+
+.back {
+  margin-bottom: 15px;
+}
+
+/* MAP */
+
+.map-wrapper {
+  position: relative;
+}
+
+#map {
+  height: 520px;
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 2px solid #263a59;
+  background: #dfe6ee;
+}
+
+.map-toolbar {
+  position: absolute;
+  z-index: 500;
+  right: 12px;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-toolbar button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #49617e;
+  background: #102038;
+  color: white;
+  border-radius: 13px;
+  font-size: 21px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.35);
+}
+
+.map-message {
+  position: absolute;
+  z-index: 500;
+  left: 14px;
+  bottom: 14px;
+  background: rgba(7,16,29,.92);
+  padding: 12px 15px;
+  border-radius: 13px;
+  color: #a8d7ff;
+  font-size: 14px;
+}
+
+.mode-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.mode-buttons button {
+  padding: 13px;
+  border-radius: 13px;
+  border: 1px solid #38516f;
+  background: #102038;
+  color: white;
+  font-weight: 700;
+}
+
+.mode-buttons button.active {
+  background: #2584df;
+}
+
+/* DASHBOARD */
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dashboard-title {
+  color: #51d31e;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid #263a59;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #102038;
+}
+
+.stat {
+  text-align: center;
+  padding: 16px 5px;
+  border-right: 1px solid #263a59;
+}
+
+.stat:last-child {
+  border-right: 0;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.stat-label {
+  color: #aab8ca;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.dashboard-map {
+  margin-top: 25px;
+}
+
+.dashboard-map #map {
+  height: 470px;
+}
+
+/* INCIDENT LIST */
+
+.incident-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.incident {
+  background: #102038;
+  border: 1px solid #263a59;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.incident-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.badge-red {
+  background: #ef3535;
+}
+
+.badge-green {
+  background: #35a853;
+}
+
+.badge-orange {
+  background: #ff9800;
+}
+
+.badge-blue {
+  background: #2584df;
+}
+
+/* FORM */
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 7px;
+  color: #c6d2e2;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  background: #081421;
+  color: white;
+  border: 1px solid #354b68;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.coordinates {
+  background: #081421;
+  border: 1px solid #263a59;
+  padding: 14px;
+  border-radius: 12px;
+  color: #8fcaff;
+  margin-top: 12px;
+}
+
+/* HOME */
+
+.hero {
+  padding: 10px 2px;
+}
+
+.hero h1 {
+  margin-bottom: 10px;
+}
+
+.home-card {
+  margin-top: 18px;
+}
+
+.icon-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* FOOTER */
+
+footer {
+  text-align: center;
+  color: #718096;
+  padding: 30px 10px;
+}
+
+/* LEAFLET */
+
+.leaflet-control-attribution {
+  font-size: 9px !important;
+}
+
+.incident-marker {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,.45);
+}
+
+.marker-red {
+  background: #ef3535;
+}
+
+.marker-green {
+  background: #35a853;
+}
+
+.marker-orange {
+  background: #ff9800;
+}
+
+.marker-blue {
+  background: #2584df;
+}
+
+.popup-title {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.popup-small {
+  font-size: 12px;
+  color: #555;
+  margin-top: 5px;
+}
+
+@media(max-width:520px) {
+
+  .brand-title {
+    font-size: 32px;
   }
-];
 
-const colors = {
-  "Armed Robbery": "#e52d2d",
-  "Drug Activity": "#66c82a",
-  "Suspicious Activity": "#e5aa19",
-  "Vandalism": "#2e83e8",
-  "Assault": "#ef8317",
-  "Theft": "#e5aa19"
-};
+  .eagle {
+    font-size: 38px;
+  }
 
-function createPin(color, icon) {
-  return L.divIcon({
-    className: "",
-    html:
-      '<div style="' +
-      'width:34px;' +
-      'height:34px;' +
-      'border-radius:50% 50% 50% 0;' +
-      'transform:rotate(-45deg);' +
-      'background:' + color + ';' +
-      'border:3px solid white;' +
-      'box-shadow:0 3px 9px rgba(0,0,0,.5);' +
-      'display:flex;' +
-      'align-items:center;' +
-      'justify-content:center;' +
-      'color:white;' +
-      'font-size:15px;' +
-      'font-weight:bold;' +
-      '">' +
-      '<span style="transform:rotate(45deg)">' + icon + '</span>' +
-      '</div>',
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
-    popupAnchor: [0, -30]
-  });
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat:nth-child(2) {
+    border-right: 0;
+  }
+
+  .stat:nth-child(-n+2) {
+    border-bottom: 1px solid #263a59;
+  }
+
+  #map {
+    height: 500px;
+  }
 }
+</style>
+</head>
 
-function incidentIcon(type) {
-  let icon = "!";
-  
-  if (type === "Armed Robbery") icon = "⚠";
-  if (type === "Drug Activity") icon = "●";
-  if (type === "Suspicious Activity") icon = "?";
-  if (type === "Vandalism") icon = "V";
-  if (type === "Assault") icon = "A";
-  if (type === "Theft") icon = "T";
+<body>
 
-  return createPin(colors[type] || "#2784e8", icon);
-}
-
-function popupContent(incident) {
-  const mapsUrl =
-    "https://www.google.com/maps/search/?api=1&query=" +
-    incident.lat + "," + incident.lng;
-
-  const streetViewUrl =
-    "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=" +
-    incident.lat + "," + incident.lng;
-
-  return `
-    <div style="min-width:220px;font-family:Arial,sans-serif">
-      <h3 style="margin:0 0 8px">
-        ${incident.type}
-      </h3>
-
-      <p style="margin:5px 0">
-        <b>Status:</b> ${incident.status}
-      </p>
-
-      <p style="margin:5px 0">
-        <b>Time:</b> ${incident.time}
-      </p>
-
-      <p style="margin:5px 0 10px">
-        ${incident.description}
-      </p>
-
-      <p style="font-size:11px;margin:5px 0">
-        ${incident.lat.toFixed(6)},
-        ${incident.lng.toFixed(6)}
-      </p>
-
-      <a href="${mapsUrl}"
-         target="_blank"
-         style="display:block;
-                background:#2784e8;
-                color:white;
-                padding:9px;
-                text-align:center;
-                border-radius:7px;
-                text-decoration:none;
-                margin-top:7px;">
-        🗺️ Open in Google Maps
-      </a>
-
-      <a href="${streetViewUrl}"
-         target="_blank"
-         style="display:block;
-                background:#182b40;
-                color:white;
-                padding:9px;
-                text-align:center;
-                border-radius:7px;
-                text-decoration:none;
-                margin-top:7px;">
-        👁️ Street View
-      </a>
+<header>
+  <div class="brand">
+    <div class="eagle">🦅</div>
+    <div>
+      <div class="brand-title">Eagle-<span>Eye</span></div>
+      <div class="subtitle">Community Safety & Incident Reporting</div>
     </div>
-  `;
-}
+  </div>
+</header>
 
-function addIncidentMarkers() {
-  incidents.forEach(incident => {
-    L.marker(
-      [incident.lat, incident.lng],
-      {
-        icon: incidentIcon(incident.type)
-      }
-    )
-    .addTo(map)
-    .bindPopup(popupContent(incident));
-  });
-}
+<div class="container">
 
-function updateDashboard() {
-  const total = incidents.length;
-  const newCount =
-    incidents.filter(i => i.status === "New").length;
+<!-- ================= HOME ================= -->
 
-  const progressCount =
-    incidents.filter(i => i.status === "In Progress").length;
+<section id="homePage" class="page active">
 
-  const resolvedCount =
-    incidents.filter(i => i.status === "Resolved").length;
+  <div class="hero">
+    <h1>Welcome to Eagle-Eye</h1>
+    <p>
+      Report incidents, select the exact location on a live map,
+      and provide useful information to authorized personnel.
+    </p>
+  </div>
 
-  const totalElement = document.getElementById("total");
-  const newElement = document.getElementById("new");
-  const progressElement = document.getElementById("progress");
-  const resolvedElement = document.getElementById("resolved");
+  <div class="card home-card">
+    <div class="icon-title">
+      <span style="font-size:32px;">🚨</span>
+      <h2>Report an Incident</h2>
+    </div>
 
-  if (totalElement) totalElement.textContent = total;
-  if (newElement) newElement.textContent = newCount;
-  if (progressElement) progressElement.textContent = progressCount;
-  if (resolvedElement) resolvedElement.textContent = resolvedCount;
+    <p>
+      Report a crime or suspicious activity and place the exact
+      location directly on the map.
+    </p>
 
-  renderIncidentList(incidents);
-}
+    <button
+      class="big-button red"
+      onclick="openIncidentMap()">
+      Report Incident
+    </button>
+  </div>
 
-function renderIncidentList(items) {
-  const list = document.getElementById("list");
+  <div class="card home-card">
+    <div class="icon-title">
+      <span style="font-size:32px;">📍</span>
+      <h2>Share My Location</h2>
+    </div>
 
-  if (!list) return;
+    <p>
+      Find your current location on the Eagle-Eye map.
+    </p>
 
-  if (!items.length) {
-    list.innerHTML =
-      '<p style="color:#aebbd0">No incidents found.</p>';
-    return;
-  }
+    <button
+      class="big-button blue"
+      onclick="findMyLocation()">
+      Share Location
+    </button>
+  </div>
 
-  list.innerHTML = items.map(incident => {
+  <div class="card home-card">
+    <div class="icon-title">
+      <span style="font-size:32px;">⚠️</span>
+      <h2>Emergency</h2>
+    </div>
 
-    let statusClass = "new";
+    <p>
+      Use this option when you need urgent assistance.
+    </p>
 
-    if (incident.status === "In Progress") {
-      statusClass = "prog";
-    }
+    <button
+      class="big-button orange"
+      onclick="emergencyAlert()">
+      Emergency
+    </button>
+  </div>
 
-    if (incident.status === "Resolved") {
-      statusClass = "done";
-    }
+  <div class="card">
+    <button
+      class="big-button dark-button"
+      onclick="openDashboard()">
+      👮 Officer Dashboard
+    </button>
+  </div>
 
-    return `
-      <button class="inc"
-        onclick="focusIncident(${incident.id})">
+</section>
 
-        <div class="incicon"
-             style="background:${colors[incident.type] || "#2784e8"}">
-          📍
-        </div>
 
-        <div class="incmain">
-          <b>${incident.type}</b>
+<!-- ================= INCIDENT MAP ================= -->
 
-          <small>
-            ${incident.description}<br>
-            ${incident.lat.toFixed(5)},
-            ${incident.lng.toFixed(5)}
-          </small>
-        </div>
+<section id="incidentMapPage" class="page">
 
-        <span class="badge ${statusClass}">
-          ${incident.status}
-        </span>
+  <button class="dark-button back" onclick="showPage('homePage')">
+    ← Back
+  </button>
 
-      </button>
-    `;
-  }).join("");
-}
+  <h1>🚨 Select Incident Location</h1>
 
-function focusIncident(id) {
-  const incident =
-    incidents.find(item => item.id === id);
+  <p>
+    Tap the exact location where the incident happened.
+    A pin will appear. You can move the map and select another point.
+  </p>
 
-  if (!incident) return;
-
-  map.setView(
-    [incident.lat, incident.lng],
-    17,
-    { animate: true }
-  );
-
-  setTimeout(() => {
-    map.eachLayer(layer => {
-      if (
-        layer.getLatLng &&
-        layer.getLatLng().lat === incident.lat &&
-        layer.getLatLng().lng === incident.lng
-      ) {
-        layer.openPopup();
-      }
-    });
-  }, 400);
-}
-
-function toggleSat() {
-  if (!map) return;
-
-  if (map.hasLayer(satelliteLayer)) {
-    map.removeLayer(satelliteLayer);
-    streetLayer.addTo(map);
-  } else {
-    map.removeLayer(streetLayer);
-    satelliteLayer.addTo(map);
-  }
-}
-
-function locateMe() {
-  if (!navigator.geolocation) {
-    alert("Location is not supported on this device.");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    function(position) {
-
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      map.setView([lat, lng], 16);
-
-      if (currentLocationMarker) {
-        map.removeLayer(currentLocationMarker);
-      }
-
-      currentLocationMarker = L.circleMarker(
-        [lat, lng],
-        {
-          radius: 9,
-          color: "#ffffff",
-          weight: 3,
-          fillColor: "#2784e8",
-          fillOpacity: 1
-        }
-      )
-      .addTo(map)
-      .bindPopup(
-        "<b>Officer Location</b><br>" +
-        lat.toFixed(6) + ", " +
-        lng.toFixed(6)
-      )
-      .openPopup();
-
-    },
-    function() {
-      alert(
-        "Could not get your location. " +
-        "Please allow location access in Chrome."
-      );
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000
-    }
-  );
-}
-
-function filterType(type) {
-  const filtered =
-    incidents.filter(i => i.type === type);
-
-  renderIncidentList(filtered);
-
-  map.eachLayer(layer => {
-    if (layer instanceof L.Marker) {
-      map.removeLayer(layer);
-    }
-  });
-
-  filtered.forEach(incident => {
-    L.marker(
-      [incident.lat, incident.lng],
-      { icon: incidentIcon(incident.type) }
-    )
-    .addTo(map)
-    .bindPopup(popupContent(incident));
-  });
-}
-
-function resetFilters() {
-  renderIncidentList(incidents);
-
-  map.eachLayer(layer => {
-    if (layer instanceof L.Marker) {
-      map.removeLayer(layer);
-    }
-  });
-
-  addIncidentMarkers();
-}
-
-function filters() {
-  alert(
-    "Incident filters are available below the map."
-  );
-}
-
-/* STREET MAP */
-streetLayer = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    maxZoom: 19,
-    attribution:
-      '&copy; OpenStreetMap contributors'
-  }
-);
-
-/* SATELLITE MAP */
-satelliteLayer = L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/" +
-  "World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  {
-    maxZoom: 19,
-    attribution:
-      "Tiles &copy; Esri"
-  }
-);
-
-/* START MAP */
-map = L.map("map", {
-  zoomControl: false,
-  attributionControl: true
-});
-
-/* DEFAULT LOCATION */
-map.setView(
-  [-25.5948, 28.0832],
-  14
-);
-
-/* LOAD NORMAL MAP */
-streetLayer.addTo(map);
-
-/* ADD INCIDENT PINS */
-addIncidentMarkers();
-
-/* UPDATE DASHBOARD NUMBERS */
-updateDashboard();
-
-/* FIX MAP SIZE AFTER PAGE LOAD */
-setTimeout(function() {
-  map.invalidateSize();
-}, 500);
-
-window.addEventListener("resize", function() {
-  if (map) {
-    map.invalidateSize();
-  }
-});
-</script>
-
-</body>
-</html>
+  <div
